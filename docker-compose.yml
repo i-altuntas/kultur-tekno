@@ -1,0 +1,45 @@
+# Kültür Tekno — Dokploy / Docker Compose dağıtımı
+# Dokploy'da: bu depoyu "Compose" tipi uygulama olarak ekleyin, ortam değişkenlerini panelden girin,
+# ve "app" servisinin 4000 portuna bir alan adı (domain) yönlendirin.
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PGUSER:-postgres}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
+      POSTGRES_DB: ${PGDATABASE:-citynews}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-citynews}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGPORT: 5432
+      PGUSER: ${PGUSER:-postgres}
+      PGPASSWORD: ${PGPASSWORD:-postgres}
+      PGDATABASE: ${PGDATABASE:-citynews}
+      PORT: 4000
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploads
+    ports:
+      # Dokploy genelde alan adını otomatik bağlar; doğrudan erişim için de açık bırakıldı.
+      - "4000:4000"
+
+volumes:
+  db-data:
+  uploads:

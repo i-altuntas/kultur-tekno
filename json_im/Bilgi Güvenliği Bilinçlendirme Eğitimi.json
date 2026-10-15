@@ -1,0 +1,92 @@
+{
+  "kurs_alani": "Bilişim Teknolojileri Alanı",
+  "kurs_adi": "Bilgi Güvenliği Bilinçlendirme Eğitimi",
+  "kurs_suresi": "17 Saat",
+  "plan_detaylari": [
+    {
+      "saat": 1,
+      "ogrenme_kazanimlari": "Bilgi ve Siber Güvenlik",
+      "basarim_olcutleri": "1. Modül: Bilgi ve Siber Güvenlik (1 Saat)\n1. BİLGİ VE SİBER GÜVENLİK\n1.1. Bilgi, Bilginin Sahibi, Bilgiyi Kullanan ve Bilgi Sistemini Yöneten Kavramları,\n1.2. Bilgi Güvenliğinin Önemi,\n1.3. Bilgileri Yetkisiz Kişilerin Eline Geçen Bireyin Yapması Gerekenler,\n1.3.1. İnternet Bilgi İhbar Merkezi,\n1.3.2. Bilgisayarda Yapılacak Kontroller,\n1.3.3. Bilgi İşlem Personeline Başvuru,\n1.4. Bilgi Güvenliğinden Sorumlu olan Kişiler,\n1.5. Bilgi Güvenliğinde Kullanıcı Sorumlulukları,\n1.6. Siber Güvenlik Kavramı,\n1.7. Siber Güvenliğin Önemi"
+    },
+    {
+      "saat": 2,
+      "ogrenme_kazanimlari": "Bilgisayar ve Erişim Güvenliği",
+      "basarim_olcutleri": "2. Modül: Bilgisayar ve Erişim Güvenliği (2 Saat)\n2. BİLGİSAYAR VE ERİŞİM GÜVENLİĞİ\n2.1. Bilgisayara Giriş Güvenliği,\n2.1.1. Bilgisayar BIOS Parolası Koyma,\n2.1.2. Bilgisayarın Kullanıcı Adı ve Parolası Kullanma,\n2.2. Parola Güvenliği,\n2.2.1. Parolanın Başkasının Eline Geçtiğinde Yapılacaklar,\n2.2.2. Zayıf Parola Örnekleri,\n2.2.3. Güçlü Parola Oluşturma,\n2.2.4. Parola Koruma Yolları,\n2.3. İşletim Sistemi ve Kullanılan Yazılımları Güncel Tutma,\n2.4. Güncel Anti-virüs Yazılımı Kullanma,\n2.5. Güvenlik Duvarı Kullanma,\n2.6. Dosya Erişim ve Paylaşım Güvenliği,\n2.6.1. Paylaştırılmış Klasörlerde Çalışma,\n2.6.2. Dosya ve Klasör Paylaştırırken Dikkat Edilecek Hususlar,\n2.6.2.1. Dosya ve Klasörleri Yetkilendirerek Paylaştırma"
+    },
+    {
+      "saat": 3,
+      "ogrenme_kazanimlari": "Bilgisayar ve Erişim Güvenliği",
+      "basarim_olcutleri": "2.6.2.1. Dosya ve Klasörleri Yetkilendirerek Paylaştırma,\n2.6.2.2. Dosyalara Parola Verme,\n2.7. Sistem ve Verilerin Yedeklenmesi,\n2.7.1. Veri Kaybı Nedenleri\n2.7.1.1. İşletim Sistemi Problemleri,\n2.7.1.2. Donanım Hataları,\n2.7.1.3. Kullanıcı Hataları,\n2.7.1.4. Zararlı Program Müdahaleleri,\n2.7.1.5. Saldırgan Kişilerin Müdahalesi,\n2.7.2. İşletim Sisteminin Yedeklenmesi,\n2.7.3. Dosyaların Yedeklenmesi\n2.7.3.1. Yedeklenecek Dosyaların Belirlenmesi,\n2.7.3.2. Yedekleme Zaman Aralıkları,\n2.7.3.3. Yedeklerin Tutulacağı Birimler,\n2.7.3.4. Yedekleme Dosya İsimleri"
+    },
+    {
+      "saat": 4,
+      "ogrenme_kazanimlari": "Tehditler ve Korunma Yöntemleri",
+      "basarim_olcutleri": "3. Modül: Tehditler ve Korunma Yöntemleri (4 Saat)\n3. TEHDİTLER VE KORUNMA YÖNTEMLERİ\n3.1. Zararlı Programlar\n3.1.1. Zararlı Program Tanımı,\n3.1.2. Zararlı Program Türleri,\n3.1.3. Zararlı Programın Bulaşma Yolları,\n3.2. Zararlı Programların Oluşturacağı Tehditler\n3.2.1. E-posta Hesabı Hırsızlıkları,\n3.2.2. Banka Şifreleri ve Diğer Kişisel Bilgi Hırsızlıkları,\n3.2.3. İşletim Sistemi ve Programların Çalışmaması veya Yanlış Çalışması,\n3.2.4. Dosya/Klasörlerin Göreceği Zararlar,\n3.2.5. Bilgisayarda Yapılan İşlemlerin İzlenmesi,\n3.2.6. İstek Dışı Kötü Amaçlı Web Sayfalarına Yönlendirme"
+    },
+    {
+      "saat": 5,
+      "ogrenme_kazanimlari": "Tehditler ve Korunma Yöntemleri",
+      "basarim_olcutleri": "3.2.6. İstek Dışı Kötü Amaçlı Web Sayfalarına Yönlendirme,\n3.3. Zararlı Program Bulaşması Durumunda Yapılması Gerekenler,\n3.4. Zararlı İnternet Yazılımlarından Korunma\n3.4.1. Zararlı Yazılım Türleri,\n3.4.1.1. Solucan (Worm),\n3.4.1.2. Truva Atı (Trojan),\n3.4.1.3. Tuş Kaydedici (Keylogger),\n3.4.1.4. Casus Yazılım (Spyware),\n3.4.2. Zararlı Yazılım Bulaşma Yolları,\n3.4.3. Zararlı Yazılımlardan Korunma Yolları\n3.4.3.1. Anti-virüs Yazılımları,\n3.4.3.1.1. Kurulumu"
+    },
+    {
+      "saat": 6,
+      "ogrenme_kazanimlari": "Tehditler ve Korunma Yöntemleri",
+      "basarim_olcutleri": "3.4.3.1.2. Ayarları,\n3.4.3.1.3. Güncelleştirilmesi,\n3.4.3.1.4. Bilgisayarın Taratılması,\n3.4.3.2. Anti-Spyware Yazılımları,\n3.4.3.2.1. Kurulumu,\n3.4.3.2.2. Ayarları,\n3.4.3.2.3. Güncelleştirilmesi,\n3.4.3.2.4. Yazılım ile Alınabilecek Güvenlik Önlemleri,\n3.5. Sosyal Mühendislik\n3.5.1. Sosyal Mühendislik Saldırı Yöntemleri,\n3.5.1.1. Zararsız Olduğu Düşünülen Bilgiler,\n3.5.1.2. Doğrudan Saldırı"
+    },
+    {
+      "saat": 7,
+      "ogrenme_kazanimlari": "Tehditler ve Korunma Yöntemleri",
+      "basarim_olcutleri": "3.5.1.2. Doğrudan Saldırı,\n3.5.1.3. Güven Uyandırmak,\n3.5.1.4. Yardımcı Olma İsteği,\n3.5.1.5. Yardım İsteği,\n3.5.1.6. Sahte Web Siteleri,\n3.5.1.7. Tehlikeli Program Yamaları,\n3.5.2. Sosyal Mühendislik Saldırı Donanımları,\n3.5.2.1. Donanımsal Tuş Kaydediciler,\n3.5.2.2. Gizlenmiş USB'ler,\n3.5.2.3. Gizlenmiş Kameralar,\n3.5.3. Şüphe Duyulması Gereken Durumlar"
+    },
+    {
+      "saat": 8,
+      "ogrenme_kazanimlari": "Internet ve Ağ Güvenliği",
+      "basarim_olcutleri": "4. Modül: Internet ve Ağ Güvenliği (6 Saat)\n4. INTERNET VE AĞ GÜVENLİĞİ\n4.1. Güvenlik Duvarı ile Korunma\n4.1.1. Güvenlik Duvarı\n4.1.1.1. Güvenlik Duvarının Görevleri,\n4.1.1.2. Güvenlik Duvarı Programının Kurulumu,\n4.1.1.3. Güvenlik Duvarı Ayarları,\n4.1.1.4. Güvenlik Duvarı Programının Güncellenmesi,\n4.1.1.5. Güvenlik Duvarı Yazılımıyla Alınacak Güvenlik Önlemleri"
+    },
+    {
+      "saat": 9,
+      "ogrenme_kazanimlari": "Internet ve Ağ Güvenliği",
+      "basarim_olcutleri": "4.1.1.5. Güvenlik Duvarı Yazılımıyla Alınacak Güvenlik Önlemleri,\n4.2. Web Güvenliği\n4.2.1. İnternette Güvenli Gezinme Yolları,\n4.2.2. HTTP/FTP Erişimlerinde Dikkat Edilmesi Gereken Hususlar,\n4.2.2.1. Güvenli İletişim Yolu (HTTPS),\n4.2.2.2. Sertifika ve Sertifikanın Geçerliliği,\n4.2.2.3. Açılır Pencere Engelleyicisi Kullanımı,\n4.2.3. Çocuklar İçin Güvenli İnternet"
+    },
+    {
+      "saat": 10,
+      "ogrenme_kazanimlari": "Internet ve Ağ Güvenliği",
+      "basarim_olcutleri": "4.2.3.1. Ailenin Yapması Gereken Kontroller,\n4.2.3.2. Çocuğu Bilinçlendirme,\n4.2.3.3. Aile Koruma Yazılımları,\n4.2.3.4. Web Sayfası İçerik Filtreleme,\n4.2.3.4.1. Uygunsuz İçerik Filtreleme Yazılımı,\n4.2.3.4.2. Uygunsuz İçerik Filtreleme Yazılımı Kurulumu,\n4.2.3.4.3. Uygunsuz İçerik Filtreleme Yazılımı Ayarları,\n4.2.3.4.4. Filtrelemeyle Alınabilecek Önlemler"
+    },
+    {
+      "saat": 11,
+      "ogrenme_kazanimlari": "Internet ve Ağ Güvenliği",
+      "basarim_olcutleri": "4.2.3.5. Konusu Suç Olan İçeriklere Erişimi Önleyici Tedbirler,\n4.3. E-posta Güvenliği\n4.3.1. İstenmeyen e-posta (Spam)\n4.3.1.1. İstenmeyen e-postadan Korunma Yolları,\n4.3.1.1.1. Adres Maskeleme,\n4.3.1.1.2. Gizli Karbon Kopya (BCC) Kullanımı,\n4.3.1.1.3. İstenmeyen e-postaları Cevaplamama,\n4.3.1.1.4. Kullanım Amacına Göre Farklı e-Posta Adresi Kullanımı"
+    },
+    {
+      "saat": 12,
+      "ogrenme_kazanimlari": "Internet ve Ağ Güvenliği",
+      "basarim_olcutleri": "4.3.1.1.4. Kullanım Amacına Göre Farklı e-Posta Adresi Kullanımı,\n4.3.2. Taklit/Oltalama e-postası (Phishing)\n4.3.2.1. Taklit/Oltalama e-postasından (Phishing) Korunma Yolları,\n4.3.2.1.1. Kişisel Bilgileri e-posta Metnine Yazmamak,\n4.3.2.1.2. E-posta Mesajlarındaki İnternet Bağlantılarından Sakınmak,\n4.3.2.1.3. Banka Hesaplarını Düzenli Olarak İncelemek,\n4.3.3. Aldatmaca e-postası (Hoax)\n4.3.4. E-Posta Yazılımları Güvenlik Ayarları"
+    },
+    {
+      "saat": 13,
+      "ogrenme_kazanimlari": "Internet ve Ağ Güvenliği",
+      "basarim_olcutleri": "4.4. ADSL Modem ve Kablosuz İnternet Güvenliği,\n4.4.1. Modem ve Kablosuz İnternet Bağlantısını Koruma Yolları,\n4.4.1.1. Modem Açma/Kapatma,\n4.4.1.2. WEB yönetim Ara Yüzü Parolası,\n4.4.1.3. Modem Kablosuz Bağlantı Parolası,\n4.4.1.4. İletişim Şifrelemesi (WEP, WPA, WPA2),\n4.4.1.5. Kullanılmayan Servisleri (FTP, SNMP, telnet, ICMP vb.) Kapatmak"
+    },
+    {
+      "saat": 14,
+      "ogrenme_kazanimlari": "Mobil Cihazlarda Güvenlik",
+      "basarim_olcutleri": "5. Modül: Mobil Cihazlarda Güvenlik (2 Saat)\n5. MOBİL CİHAZLARDA GÜVENLİK\n5.1. Güvenlik Konusunda İyi Uygulamalar\n5.1.1. Parola ve Cihaz Kilidi,\n5.1.2. Kablosuz Ağların Kullanımı"
+    },
+    {
+      "saat": 15,
+      "ogrenme_kazanimlari": "Mobil Cihazlarda Güvenlik",
+      "basarim_olcutleri": "5.1.2. Kablosuz Ağların Kullanımı,\n5.1.3. Uygulama Yükleme,\n5.1.4. İşletim Sistemi ve Uygulama Güncelleme"
+    },
+    {
+      "saat": 16,
+      "ogrenme_kazanimlari": "Kişisel Verilerin Korunması ve Mahremiyet",
+      "basarim_olcutleri": "6. Modül: Kişisel Verilerin Korunması ve Mahremiyet (2 Saat)\n6. KİŞİSEL VERİLERİN KORUNMASI VE MAHREMİYET\n6.1. İnternet ve İnternette İşlenen Veriler,\n6.2. İnternetteki Verilerin Tutulduğu Yerler,\n6.3. Paylaşım Yaparken Mahremiyetin Korunması"
+    },
+    {
+      "saat": 17,
+      "ogrenme_kazanimlari": "Kişisel Verilerin Korunması ve Mahremiyet",
+      "basarim_olcutleri": "6.3. Paylaşım Yaparken Mahremiyetin Korunması,\n6.4. Sosyal Medyada Mahremiyet,\n6.5. Mahremiyet, Devlet ve Yasal Haklar"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+/* =================== PANEL SEKMELERİ =================== */
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 22px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+.admin-tab {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.admin-tab:hover { color: var(--txt); border-color: var(--muted); }
+.admin-tab.active {
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: #05060a;
+  font-weight: 700;
+}
+

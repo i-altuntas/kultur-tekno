@@ -1,0 +1,91 @@
+/* =================== EĞİTİCİ YAZI KİTABI (FLIPBOOK) =================== */
+.book-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0 36px;
+}
+.flip-book { margin: 0 auto; }
+
+/* kitap sayfası — açık kağıt zemin, koyu metin */
+.flip-page {
+  background: #f4f1ea;
+  color: #23262e;
+  box-sizing: border-box;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #d9d4c7;
+}
+.flip-img {
+  flex: 0 0 auto;
+  height: 44%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e9e5db;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.flip-img img { width: 100%; height: 100%; object-fit: contain; }
+.flip-text { flex: 1 1 auto; overflow: auto; font-size: 15px; line-height: 1.6; }
+.flip-text p { margin: 0 0 10px; }
+.flip-page .content-fig { margin: 10px 0; }
+.flip-page .content-fig img { border: 1px solid #d9d4c7; border-radius: 6px; }
+.flip-page .content-fig figcaption { color: #6b6658; }
+.flip-no {
+  align-self: flex-end;
+  margin-top: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: #8a8577;
+}
+
+/* kapak ve arka kapak — koyu, temayla uyumlu */
+.flip-cover {
+  background: linear-gradient(160deg, #10212a, #0a1c12);
+  color: var(--txt);
+  border: 1px solid rgba(182, 255, 59, 0.3);
+  justify-content: center;
+  gap: 12px;
+}
+.flip-cover-title { margin: 6px 0; font-size: clamp(22px, 4.5vw, 30px); line-height: 1.2; color: #fff; }
+.flip-cover-sum { color: var(--lime); font-size: 15px; line-height: 1.5; }
+.flip-cover-intro { color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+.flip-hint { margin-top: auto; font-family: "JetBrains Mono", monospace; font-size: 11px; color: var(--muted); }
+.flip-back { background: #0a1c12; color: var(--txt); align-items: center; justify-content: center; border-color: rgba(182, 255, 59, 0.3); }
+.flip-back-in { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.flip-end { font-family: "JetBrains Mono", monospace; letter-spacing: 0.2em; color: var(--lime); font-size: 18px; }
+.book-tip { color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-top: 16px; text-align: center; }
+
+/* panel: JSON ile kitap içe aktarma kutusu */
+.json-import {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border: 1px dashed rgba(182, 255, 59, 0.4);
+  background: rgba(182, 255, 59, 0.05);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.json-import-text strong { color: var(--lime); font-size: 14px; }
+.json-import-text .hint { margin: 6px 0 0; }
+.json-import-text code {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 11px;
+}
+.json-import-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* panel: sayfa yöneticisi */
+.panel-subtitle { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--muted); margin: 0 0 12px; letter-spacing: 0.04em; }
+.page-row { align-items: center; }
+.page-thumb { width: 56px; height: 42px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); flex: 0 0 auto; }
+

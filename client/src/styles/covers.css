@@ -1,0 +1,159 @@
+/* =================== KİTAP KAPAK TASARIMLARI (10 seçenek) =================== */
+.flip-cover { position: relative; overflow: hidden; }
+.cover-glyph {
+  position: absolute;
+  width: 240px; height: 240px; right: -80px; top: -80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 70%);
+  pointer-events: none;
+}
+.flip-cover > :not(.cover-glyph) { position: relative; z-index: 1; }
+
+/* her kapağın zemini — hem tam kapak hem küçük önizleme için */
+.flip-cover.cover-aurora, .cover-thumb.cover-aurora { background: linear-gradient(140deg, #063b2b, #0b5a40 55%, #0a7f5c); }
+.flip-cover.cover-mesh, .cover-thumb.cover-mesh {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(123, 47, 247, 0.9), transparent 45%),
+    radial-gradient(circle at 82% 22%, rgba(247, 47, 142, 0.9), transparent 45%),
+    radial-gradient(circle at 50% 88%, rgba(47, 128, 247, 0.9), transparent 50%),
+    #140a24;
+}
+.flip-cover.cover-sunset, .cover-thumb.cover-sunset { background: linear-gradient(145deg, #ff7e5f, #feb47b); }
+.flip-cover.cover-midnight, .cover-thumb.cover-midnight {
+  background: radial-gradient(circle at 30% 18%, #2a3f70, transparent 60%), linear-gradient(160deg, #0b1230, #090e1c);
+}
+.flip-cover.cover-neon, .cover-thumb.cover-neon {
+  background: radial-gradient(circle at 50% 125%, rgba(0, 240, 255, 0.28), transparent 60%), #0a0a14;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+}
+.flip-cover.cover-forest, .cover-thumb.cover-forest {
+  background: repeating-linear-gradient(45deg, #0c2a1f, #0c2a1f 14px, #103a28 14px, #103a28 28px);
+}
+.flip-cover.cover-blueprint, .cover-thumb.cover-blueprint {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    #0d3b66;
+  background-size: 22px 22px, 22px 22px, auto;
+}
+.flip-cover.cover-gold, .cover-thumb.cover-gold {
+  background: radial-gradient(circle at 70% 18%, rgba(214, 178, 94, 0.38), transparent 55%), linear-gradient(160deg, #1a1710, #0e0c07);
+}
+.flip-cover.cover-paper, .cover-thumb.cover-paper {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    #f4f1ea;
+  background-size: 20px 20px, 20px 20px, auto;
+}
+.flip-cover.cover-mono, .cover-thumb.cover-mono { background: linear-gradient(135deg, #1c1c1c, #0b0b0b); }
+
+/* --- Yaratıcı seri (konulara göre) --- */
+/* Minimalist */
+.flip-cover.cover-min1, .cover-thumb.cover-min1 { background: radial-gradient(circle at 82% 18%, #e2524a 0 9px, transparent 10px), #edeae2; }
+.flip-cover.cover-min2, .cover-thumb.cover-min2 { background: radial-gradient(circle at 82% 18%, #00f0ff 0 7px, transparent 8px), #15171b; }
+/* Sürrealist */
+.flip-cover.cover-sur1, .cover-thumb.cover-sur1 { background: radial-gradient(circle at 50% 76%, #ffd36e 0 7%, rgba(255, 211, 110, 0) 22%), linear-gradient(180deg, #2b1055, #5b3aa6 55%, #9d7bd8); }
+.flip-cover.cover-sur2, .cover-thumb.cover-sur2 { background: radial-gradient(circle at 28% 32%, #ff9a3c, transparent 42%), radial-gradient(circle at 74% 68%, #1fd0c4, transparent 45%), linear-gradient(135deg, #3a2a5a, #1c1430); }
+/* Tipografik */
+.flip-cover.cover-typo1, .cover-thumb.cover-typo1 { background: #101014; }
+.flip-cover.cover-typo2, .cover-thumb.cover-typo2 { background: #f5f3ea; }
+.flip-cover.cover-typo1 .flip-cover-title, .flip-cover.cover-typo2 .flip-cover-title { font-size: clamp(42px, 9vw, 74px); line-height: 0.98; letter-spacing: -0.03em; font-weight: 700; }
+/* Vintage & Retro */
+.flip-cover.cover-vin1, .cover-thumb.cover-vin1 { background: linear-gradient(transparent 42%, #efe0c2 100%), repeating-conic-gradient(from 0deg at 50% 38%, #e3a93f 0 14deg, #cf7738 14deg 28deg); }
+.flip-cover.cover-vin2, .cover-thumb.cover-vin2 { background: linear-gradient(180deg, #f2c14e, #e07a3f 42%, #b5472f 72%, #5a2d2a); }
+/* Gotik & Karanlık */
+.flip-cover.cover-goth1, .cover-thumb.cover-goth1 { background: radial-gradient(circle at 50% 28%, #4a0d12, transparent 55%), radial-gradient(circle at 50% 120%, rgba(0, 0, 0, 0.65), transparent), #0a0608; }
+.flip-cover.cover-goth2, .cover-thumb.cover-goth2 { background: radial-gradient(circle at 50% 40%, rgba(120, 20, 30, 0.25), transparent 60%), repeating-linear-gradient(45deg, #121016, #121016 18px, #18141f 18px, #18141f 36px); }
+.flip-cover.cover-goth1 .flip-cover-title, .flip-cover.cover-goth2 .flip-cover-title { font-family: "Fraunces", Georgia, serif; letter-spacing: 0.01em; }
+/* Fantastik */
+.flip-cover.cover-fan1, .cover-thumb.cover-fan1 { background: radial-gradient(circle at 30% 25%, #6a3cc9, transparent 50%), radial-gradient(circle at 75% 72%, #1f9e8a, transparent 50%), #140a22; }
+.flip-cover.cover-fan1 .flip-cover-title { color: #ead18c; -webkit-text-fill-color: #ead18c; font-family: "Fraunces", Georgia, serif; }
+.flip-cover.cover-fan2, .cover-thumb.cover-fan2 { background: linear-gradient(180deg, #f7b267 0%, #c75b39 28%, #3a2140 62%, #161022 100%); }
+/* Bilim Kurgu */
+.flip-cover.cover-sci1, .cover-thumb.cover-sci1 { background: radial-gradient(circle at 50% 82%, rgba(255, 45, 155, 0.55), transparent 52%), linear-gradient(180deg, #140a28, #2a1150); border: 1px solid rgba(255, 45, 155, 0.35); }
+.flip-cover.cover-sci2, .cover-thumb.cover-sci2 { background: radial-gradient(circle at 22% 28%, #fff 0 1.2px, transparent 2px), radial-gradient(circle at 62% 58%, #fff 0 1.2px, transparent 2px), radial-gradient(circle at 85% 22%, #fff 0 1.2px, transparent 2px), radial-gradient(circle at 40% 80%, #fff 0 1px, transparent 2px), radial-gradient(circle at 70% 30%, #1c3a66, transparent 55%), #05070f; }
+/* Botanik & Doğa */
+.flip-cover.cover-bot1, .cover-thumb.cover-bot1 { background: radial-gradient(circle at 18% 82%, #bcd9a8, transparent 42%), radial-gradient(circle at 82% 20%, #8fc0a9, transparent 42%), #eaf1e2; }
+.flip-cover.cover-bot2, .cover-thumb.cover-bot2 { background: radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08), transparent 40%), linear-gradient(160deg, #163a2a, #245c42 60%, #3b7d5a); }
+/* Deneysel & Sanatsal */
+.flip-cover.cover-art1, .cover-thumb.cover-art1 { background: conic-gradient(from 35deg, #ff5d5d 0 25%, #ffd23f 25% 50%, #3ad0ff 50% 75%, #8a5cff 75% 100%); }
+.flip-cover.cover-art2, .cover-thumb.cover-art2 { background: radial-gradient(circle at 25% 30%, #ff4d87, transparent 45%), radial-gradient(circle at 75% 32%, #ffd23f, transparent 45%), radial-gradient(circle at 52% 82%, #3ad0ff, transparent 50%), #201633; }
+/* 3D & İllüzyon */
+.flip-cover.cover-iso, .cover-thumb.cover-iso { background: linear-gradient(30deg, #2a2f45 12%, transparent 12.5% 87%, #2a2f45 87.5%), linear-gradient(150deg, #2a2f45 12%, transparent 12.5% 87%, #2a2f45 87.5%), #1b1f30; background-size: 42px 42px; }
+.flip-cover.cover-illus, .cover-thumb.cover-illus { background: repeating-radial-gradient(circle at 50% 42%, #2a2a2a 0 13px, #3b3b3b 13px 26px); }
+
+/* kapak başlığı okunurluğu için hafif gölge (koyu kapaklar) */
+.flip-cover .flip-cover-title { text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); }
+
+/* açık zeminli yeni kapaklar: koyu metin + koyu glyph + koyu pill + gölgesiz başlık */
+.flip-cover.cover-min1 .flip-cover-title, .flip-cover.cover-typo2 .flip-cover-title, .flip-cover.cover-vin1 .flip-cover-title, .flip-cover.cover-bot1 .flip-cover-title,
+.flip-cover.cover-paper .flip-cover-title, .flip-cover.cover-sunset .flip-cover-title { color: #1b1f26; -webkit-text-fill-color: #1b1f26; text-shadow: none; }
+.flip-cover.cover-min1 .flip-cover-sum, .flip-cover.cover-typo2 .flip-cover-sum, .flip-cover.cover-vin1 .flip-cover-sum, .flip-cover.cover-bot1 .flip-cover-sum { color: #3a4a40; }
+.flip-cover.cover-min1 .flip-cover-intro, .flip-cover.cover-typo2 .flip-cover-intro, .flip-cover.cover-vin1 .flip-cover-intro, .flip-cover.cover-bot1 .flip-cover-intro { color: #5a4a40; }
+.flip-cover.cover-min1 .flip-hint, .flip-cover.cover-typo2 .flip-hint, .flip-cover.cover-vin1 .flip-hint, .flip-cover.cover-bot1 .flip-hint { color: #6a5a50; }
+.flip-cover.cover-min1 .cover-glyph, .flip-cover.cover-typo2 .cover-glyph, .flip-cover.cover-vin1 .cover-glyph, .flip-cover.cover-bot1 .cover-glyph { background: radial-gradient(circle, rgba(0, 0, 0, 0.07), transparent 70%); }
+.flip-cover.cover-min1 .lv-pill, .flip-cover.cover-typo2 .lv-pill, .flip-cover.cover-vin1 .lv-pill, .flip-cover.cover-bot1 .lv-pill { background: rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 0, 0, 0.25); color: #2a2a2a; }
+
+/* açık zeminli kapaklarda koyu metin + koyu glyph */
+.flip-cover.cover-sunset .flip-cover-title, .flip-cover.cover-paper .flip-cover-title { color: #1b1f26; -webkit-text-fill-color: #1b1f26; }
+.flip-cover.cover-sunset .flip-cover-sum { color: #7a3b22; }
+.flip-cover.cover-paper .flip-cover-sum { color: #2a4139; }
+.flip-cover.cover-sunset .flip-cover-intro, .flip-cover.cover-paper .flip-cover-intro { color: #5a4a40; }
+.flip-cover.cover-sunset .flip-hint, .flip-cover.cover-paper .flip-hint { color: #6a5a50; }
+.flip-cover.cover-sunset .cover-glyph, .flip-cover.cover-paper .cover-glyph { background: radial-gradient(circle, rgba(0, 0, 0, 0.07), transparent 70%); }
+.flip-cover.cover-sunset .lv-pill, .flip-cover.cover-paper .lv-pill { background: rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 0, 0, 0.25); color: #2a2a2a; }
+/* gold başlık vurgusu */
+.flip-cover.cover-gold .flip-cover-title { color: #ead18c; -webkit-text-fill-color: #ead18c; }
+.flip-cover.cover-gold .flip-cover-sum { color: #cdb472; }
+
+/* kapak üstü rozet (koyu kapaklarda açık pill) */
+.flip-cover .lv-pill { background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; }
+
+/* panel: kapak seçici küçük önizlemeler */
+.cover-picker { margin: 2px 0 18px; }
+.cover-picker-title { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--cyan); margin-bottom: 10px; letter-spacing: 0.05em; }
+.cover-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.cover-thumb {
+  position: relative;
+  width: 92px; height: 120px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: 0.15s;
+}
+.cover-thumb:hover { transform: translateY(-3px); }
+.cover-thumb.sel { border-color: var(--cyan); box-shadow: 0 0 0 2px var(--cyan), 0 6px 16px rgba(0, 0, 0, 0.45); }
+.cover-thumb .cover-glyph { width: 90px; height: 90px; right: -28px; top: -28px; }
+.cover-thumb-name {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.42);
+  padding: 3px 0;
+}
+.cover-check {
+  position: absolute;
+  top: 5px; left: 6px;
+  z-index: 2;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--cyan);
+  color: #05060a;
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+}
+

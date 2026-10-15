@@ -1,0 +1,186 @@
+/* =================== EĞİTİCİ YAZILAR — okuyolla krem teması =================== */
+/* Yalnızca Eğitici Yazılar LİSTE sayfası (.oy) için; kitap okuma ve diğer bölümler etkilenmez. */
+.oy {
+  --oy-canvas: #f7f6f2;
+  --oy-rail: #e8e7e3;
+  --oy-ink: #17231f;
+  --oy-ink-body: #23332d;
+  --oy-ink-muted: #5a6b63;
+  --oy-border: #d9d9d4;
+  --oy-action: #2a4139;
+  --oy-action-hover: #1d3029;
+  --oy-action-light: #e4eae5;
+  background: var(--oy-canvas);
+  color: var(--oy-ink);
+}
+/* tam genişlik krem zemin + neon grid'i kapat */
+.oy .grid-bg { display: none; }
+.oy::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--oy-canvas);
+  z-index: -1;
+}
+
+/* üst bar / başlık / linkler */
+.oy .read-top { background: rgba(247, 246, 242, 0.92); border-bottom-color: var(--oy-border); }
+.oy .back { color: var(--oy-action); }
+.oy .brand-mini { color: var(--oy-ink); }
+.oy .brand-mini .accent { color: var(--oy-action); }
+.oy .read-info { color: var(--oy-ink-muted); }
+.oy .btn { border-color: var(--oy-action); color: var(--oy-action); }
+.oy .btn:hover { background: var(--oy-action-light); }
+
+/* giriş başlığı + seviye filtreleri */
+.oy .tut-intro p { color: var(--oy-ink-muted); }
+/* sanatsal başlık: Fraunces + yumuşak giriş + ince alt çizgi çizimi */
+.oy .art-title {
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: clamp(36px, 6.5vw, 62px);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  margin: 4px 0 10px;
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(94deg, #2a4139 0%, #4a5750 55%, #2a4139 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #2a4139; /* fallback */
+  animation: oyTitleIn 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.oy .art-title::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  bottom: -4px;
+  height: 3px;
+  width: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #2a4139, rgba(42, 65, 57, 0));
+  animation: oyUnderline 0.9s 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes oyTitleIn {
+  from { opacity: 0; transform: translateY(14px); filter: blur(5px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes oyUnderline {
+  to { width: 44%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oy .art-title,
+  .oy .art-title::after { animation: none; }
+  .oy .art-title::after { width: 44%; }
+}
+.oy .lv-chip { background: #fff; border-color: var(--oy-border); color: var(--oy-ink-muted); }
+.oy .lv-chip.active { background: var(--oy-action); border-color: var(--oy-action); color: var(--oy-canvas); }
+
+/* kartlar */
+.oy .card {
+  background: #ffffff;
+  border-color: var(--oy-border);
+}
+.oy .card:hover {
+  border-color: var(--oy-action);
+  box-shadow: 0 10px 30px rgba(42, 65, 57, 0.12);
+}
+.oy .card-body h3 { color: var(--oy-ink); }
+.oy .card-body p { color: var(--oy-ink-muted); }
+.oy .meta { color: var(--oy-ink-muted); }
+.oy .dot { color: var(--oy-border); }
+.oy .read { color: var(--oy-action); }
+/* karttaki seviye rozetleri (yeşil tonları) */
+.oy .card .lv-pill { background: var(--oy-action-light); border: 1px solid #c5cbc5; color: var(--oy-action); }
+.oy .card .lv-pill.lv-mid { background: #dde6e4; color: var(--oy-action-hover); }
+.oy .card .lv-pill.lv-adv { background: #d2dcd8; color: var(--oy-ink); }
+
+/* kitap sayfaları (flipbook) — krem kağıt, koyu yeşil mürekkep */
+.oy .flip-page { background: var(--oy-canvas); color: var(--oy-ink-body); border-color: var(--oy-border); }
+.oy .flip-img { background: var(--oy-rail); }
+.oy .flip-text { color: var(--oy-ink-body); }
+.oy .flip-no { color: var(--oy-ink-muted); }
+.oy .flip-page .content-fig img { border-color: var(--oy-border); }
+.oy .flip-page .content-fig figcaption { color: var(--oy-ink-muted); }
+.oy .book-tip { color: var(--oy-ink-muted); }
+
+/* kapak ve arka kapak — koyu yeşil (site vurgu rengi) */
+.oy .flip-cover { background: linear-gradient(160deg, #2a4139, #17231f); border-color: #2a4139; color: #f7f6f2; }
+.oy .flip-cover-title { color: #ffffff; }
+.oy .flip-cover-sum { color: #e4eae5; }
+.oy .flip-cover-intro { color: #c5cbc5; }
+.oy .flip-hint { color: #c5cbc5; }
+.oy .flip-cover .lv-pill { background: rgba(247, 246, 242, 0.15); border: 1px solid rgba(247, 246, 242, 0.35); color: #f7f6f2; }
+.oy .flip-back { background: #17231f; border-color: #2a4139; color: #f7f6f2; }
+.oy .flip-end { color: #e4eae5; }
+.oy .flip-back .back { color: #e4eae5; }
+
+/* Eğitici KİTAP OKUMA sayfasının web zemini = liste sayfasıyla aynı krem.
+   Kitap sayfalarının (.flip-*) rengine DOKUNMAZ; sadece sayfa zemini + üst bar/chrome. */
+.oy-bg {
+  --oy-canvas: #f7f6f2;
+  --oy-ink: #17231f;
+  --oy-ink-muted: #5a6b63;
+  --oy-border: #d9d9d4;
+  --oy-action: #2a4139;
+  --oy-action-light: #e4eae5;
+  background: var(--oy-canvas);
+  color: var(--oy-ink);
+}
+.oy-bg .grid-bg { display: none; }
+.oy-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--oy-canvas);
+  z-index: -1;
+}
+.oy-bg .read-top { background: rgba(247, 246, 242, 0.92); border-bottom-color: var(--oy-border); }
+.oy-bg .back { color: var(--oy-action); }
+.oy-bg .brand-mini { color: var(--oy-ink); }
+.oy-bg .brand-mini .accent { color: var(--oy-action); }
+.oy-bg .read-info { color: var(--oy-ink-muted); }
+.oy-bg .btn { border-color: var(--oy-action); color: var(--oy-action); }
+.oy-bg .btn:hover { background: var(--oy-action-light); }
+.oy-bg .book-tip { color: var(--oy-ink-muted); }
+
+/* ---- Köşe & Arduino LİSTE sayfaları: krem tema uyumu ---- */
+.oy .columns-intro p,
+.oy .arduino-intro p { color: var(--oy-ink-muted); }
+.oy .columns-intro h1,
+.oy .arduino-intro h1 { color: var(--oy-action); } /* art-title zaten gradyan; fallback */
+
+/* köşe yazısı yazar etiketi */
+.oy .cat.amber-cat {
+  color: var(--oy-action);
+  border-color: #c5cbc5;
+  background: var(--oy-action-light);
+}
+
+/* Arduino liste kartları (kendi .arduino-item yapısı) */
+.oy .arduino-item { background: #ffffff; border-color: var(--oy-border); }
+.oy .arduino-item:hover { border-color: var(--oy-action); box-shadow: 0 10px 30px rgba(42, 65, 57, 0.12); }
+.oy .arduino-figure { background: #eef0ec; }
+.oy .arduino-meta { color: var(--oy-ink-muted); }
+.oy .arduino-title { color: var(--oy-ink); }
+.oy .arduino-title:hover { color: var(--oy-action); }
+.oy .arduino-summary { color: var(--oy-ink-muted); }
+.oy .arduino-toggle { color: var(--oy-action); }
+.oy .arduino-badge { background: rgba(247, 246, 242, 0.88); color: var(--oy-action); border-color: rgba(42, 65, 57, 0.3); }
+
+/* ---- Köşe & Arduino OKUMA sayfaları: krem zemin + metin renkleri (.oy-bg .reader) ---- */
+.oy-bg .reader h2 { color: var(--oy-ink); }
+.oy-bg .reader .meta { color: var(--oy-ink-muted); }
+.oy-bg .reader .cat { color: var(--oy-action); border-color: rgba(42, 65, 57, 0.35); }
+.oy-bg .reader .cat.amber-cat { background: var(--oy-action-light); border-color: #c5cbc5; }
+.oy-bg .reader .dot { color: var(--oy-border); }
+.oy-bg .reader .modal-summary { color: var(--oy-action); border-left-color: var(--oy-action); }
+.oy-bg .reader .modal-content p { color: var(--oy-ink-body); opacity: 1; }
+.oy-bg .reader .content-fig img { border-color: var(--oy-border); }
+.oy-bg .reader .content-fig figcaption { color: var(--oy-ink-muted); }
+.oy-bg .reader-end { color: var(--oy-ink-muted); }
+.oy-bg .arduino-figure { background: #eef0ec; }
+.oy-bg .arduino-figure.detail { border-color: var(--oy-border); }
+.oy-bg .arduino-badge { background: rgba(247, 246, 242, 0.88); color: var(--oy-action); border-color: rgba(42, 65, 57, 0.3); }
+

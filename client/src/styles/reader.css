@@ -1,0 +1,47 @@
+/* =================== OKUMA SAYFASI =================== */
+.read-page {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 0 20px 90px;
+}
+.read-top {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(52, 55, 62, 0.88);
+  backdrop-filter: blur(8px);
+}
+.back {
+  color: var(--cyan);
+  text-decoration: none;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+}
+.back:hover { text-decoration: underline; }
+.brand-mini {
+  text-decoration: none;
+  color: var(--txt);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.brand-mini .accent { color: var(--cyan); }
+.read-info {
+  text-align: center;
+  padding: 90px 20px;
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+}
+.read-info p { font-size: 18px; margin-bottom: 18px; }
+.read-stream { padding-bottom: 20px; }
+

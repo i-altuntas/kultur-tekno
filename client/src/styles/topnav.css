@@ -1,0 +1,111 @@
+/* =================== ÜST NAVİGASYON (her sayfada) =================== */
+.topnav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: var(--nav-h);
+  padding: 0 16px;
+  background: rgba(14, 16, 22, 0.78);
+  backdrop-filter: blur(12px) saturate(1.2);
+}
+.topnav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+  opacity: 0.8;
+}
+
+/* ev (ana sayfa) ikonu — sol üst, her zaman */
+.topnav-home {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--cyan);
+  text-decoration: none;
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  background: radial-gradient(circle at 30% 25%, rgba(0, 240, 255, 0.18), rgba(0, 240, 255, 0.02));
+  transition: 0.2s;
+}
+.topnav-home:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.5);
+  border-color: var(--cyan);
+}
+.topnav-home.active {
+  color: #05060a;
+  background: linear-gradient(135deg, var(--cyan), #7df9ff);
+  border-color: transparent;
+}
+
+/* sanatsal bölüm butonları */
+.topnav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+}
+.topnav-links::-webkit-scrollbar { display: none; }
+.topnav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--txt);
+  font-weight: 600;
+  font-size: 13.5px;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+  transition: 0.18s ease;
+}
+.topnav-btn .ic { font-size: 15px; line-height: 1; }
+.topnav-btn:hover {
+  transform: translateY(-2px);
+  color: #fff;
+  border-color: rgba(0, 240, 255, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 14px rgba(0, 240, 255, 0.18);
+}
+.topnav-btn.active {
+  color: #05060a;
+  border-color: transparent;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+}
+.topnav-btn.active:hover { color: #05060a; transform: translateY(-1px); }
+
+.topnav-panel {
+  flex-shrink: 0;
+  text-decoration: none;
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: 0.18s;
+}
+.topnav-panel:hover { color: var(--amber); border-color: var(--amber); }
+.topnav-panel.active { color: var(--amber); border-color: var(--amber); }
+
+@media (max-width: 680px) {
+  .topnav-btn .lbl { display: none; }
+  .topnav-btn { padding: 8px 12px; }
+  .topnav-panel { display: none; }
+}
+

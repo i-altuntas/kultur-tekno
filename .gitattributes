@@ -1,0 +1,17 @@
+# Metin dosyalarını depoda LF olarak normalize et
+* text=auto eol=lf
+
+# Linux'ta çalışacak dosyalar kesinlikle LF olmalı
+Dockerfile text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# İkili dosyalar dokunulmaz
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.mp3 binary
+*.ico binary

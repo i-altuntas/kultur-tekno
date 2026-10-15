@@ -1,0 +1,62 @@
+/* =================== KÖŞE YAZILARI (editoryal) =================== */
+.columns-page .read-top { background: rgba(52, 55, 62, 0.88); }
+.columns-intro { max-width: 820px; margin: 10px auto 30px; }
+.columns-intro h1 {
+  margin: 0 0 8px;
+  font-size: clamp(26px, 4vw, 38px);
+  color: var(--amber);
+  font-weight: 800;
+}
+.columns-intro p { margin: 0; color: var(--muted); }
+.columns-list { max-width: 820px; margin: 0 auto; }
+.column-item {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+.column-byline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.column-author {
+  color: var(--amber);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.column-title {
+  margin: 0 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: clamp(22px, 3.2vw, 32px);
+  line-height: 1.2;
+  cursor: pointer;
+}
+.column-title:hover { color: var(--amber); }
+.column-summary {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.column-body {
+  margin: 16px 0 6px;
+  border-left: 3px solid var(--amber);
+  padding-left: 20px;
+}
+.column-body p { line-height: 1.85; font-size: 16.5px; }
+.column-toggle {
+  background: transparent;
+  border: none;
+  color: var(--amber);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.column-toggle:hover { text-decoration: underline; }
+

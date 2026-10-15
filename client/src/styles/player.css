@@ -1,0 +1,56 @@
+/* =================== SESLİ OKUMA PLAYER (navbar altı bar) =================== */
+.player-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 10px 0;
+}
+.pl-play {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  color: #f7f6f2;
+  background: linear-gradient(135deg, #2a4139, #17231f);
+  box-shadow: 0 4px 14px rgba(42, 65, 57, 0.35);
+  transition: 0.15s;
+}
+.pl-play:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(42, 65, 57, 0.5); }
+.pl-play.on { background: linear-gradient(135deg, #1d3029, #0f1a15); }
+.pl-play:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.pl-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+.pl-track { height: 8px; border-radius: 999px; background: #d9d9d4; cursor: pointer; overflow: hidden; }
+.pl-fill { height: 100%; background: linear-gradient(90deg, #2a4139, #4a5750); border-radius: 999px; transition: width 0.1s linear; }
+.pl-info { display: flex; justify-content: space-between; gap: 10px; font-family: "JetBrains Mono", monospace; font-size: 11px; color: #5a6b63; }
+.pl-label b { color: #2a4139; font-weight: 700; }
+.pl-label b.cur { text-decoration: underline; }
+
+.pl-rates { flex-shrink: 0; display: flex; gap: 5px; }
+.pl-rate {
+  border: 1px solid #c5cbc5;
+  background: #fff;
+  color: #2a4139;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.pl-rate:hover { border-color: #2a4139; }
+.pl-rate.on { background: #2a4139; color: #f7f6f2; border-color: #2a4139; }
+
+@media (max-width: 640px) {
+  .player-bar { gap: 10px; }
+  .pl-play { width: 40px; height: 40px; }
+  .pl-rate { padding: 5px 6px; }
+  .pl-label { display: none; }
+}
+

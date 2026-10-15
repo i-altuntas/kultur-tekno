@@ -1,0 +1,26 @@
+# Bağımlılıklar ve derleme çıktıları (imaj içinde yeniden kurulur/derlenir)
+**/node_modules
+**/dist
+**/.vite
+
+# Ortam ve loglar
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+
+# Yerele özgü / dağıtımda gereksiz dosyalar
+.git
+yedekler/
+assets/
+tools/
+icerik-uretici/
+mcp/
+kitap/
+json_im/
+*.lnk
+*.bat
+*.vbs
+launcher.ps1
+.claude/
+.DS_Store

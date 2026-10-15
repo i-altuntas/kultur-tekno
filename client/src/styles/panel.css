@@ -1,0 +1,185 @@
+/* =================== PANEL =================== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  gap: 22px;
+  margin-top: 20px;
+}
+.panel-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+}
+.panel-title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  margin: 0 0 20px;
+}
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form input,
+.form select,
+.form textarea {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--txt);
+  padding: 11px 13px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 15px;
+  transition: 0.15s;
+}
+.form textarea { resize: vertical; line-height: 1.6; }
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.12);
+}
+
+/* metne görsel ekleme kutusu */
+.img-insert {
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 240, 255, 0.03);
+}
+.img-insert-title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+}
+.img-insert .row { margin: 0; }
+.hint {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  padding: 13px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn:hover { background: rgba(0, 240, 255, 0.08); }
+.btn.primary {
+  background: var(--cyan);
+  color: #05060a;
+  font-weight: 700;
+  border-color: var(--cyan);
+}
+.btn.primary:hover { box-shadow: var(--glow) rgba(0, 240, 255, 0.5); }
+.btn.primary:disabled { opacity: 0.5; cursor: wait; }
+
+.msg {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  padding: 11px 14px;
+  border-radius: 8px;
+}
+.msg.ok { color: var(--lime); border: 1px solid rgba(182, 255, 59, 0.4); background: rgba(182, 255, 59, 0.06); }
+.msg.err { color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.4); background: rgba(255, 107, 107, 0.06); }
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 70vh;
+  overflow: auto; /* dikey + yatay kaydırma */
+  padding: 2px;
+}
+.admin-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--bg-soft);
+  min-width: 100%;      /* kısa içerikte satır tüm genişliği kaplar */
+  width: max-content;   /* uzun başlıkta satır genişler → yatay kaydırma */
+}
+.admin-row.passive { opacity: 0.55; }
+.admin-row-main { display: flex; flex-direction: column; gap: 6px; flex: 1 0 auto; }
+.admin-row-top { display: flex; align-items: center; gap: 10px; }
+.admin-row-title { white-space: nowrap; font-size: 14px; } /* tam başlık; gerekirse yatay kaydırma */
+.status {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.status.on { color: var(--lime); border: 1px solid rgba(182, 255, 59, 0.4); }
+.status.off { color: var(--muted); border: 1px solid var(--line); }
+.admin-date {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.admin-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  position: sticky; /* yatay kaydırmada sol kenarda sabit kalsın */
+  left: 0;
+  background: var(--bg-soft);
+  padding-right: 10px;
+  z-index: 1;
+}
+.toggle {
+  background: transparent;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: var(--cyan);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.toggle:hover { background: rgba(0, 240, 255, 0.1); }
+.toggle.muted-btn { border-color: var(--line); color: var(--muted); }
+.toggle.muted-btn:hover { color: var(--txt); border-color: var(--muted); background: transparent; }
+.del {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ff6b6b;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.del:hover { background: rgba(255, 107, 107, 0.1); }
+.muted { color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 13px; }
+
