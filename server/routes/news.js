@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import { softAuth } from "../lib/auth.js";
 
 // Haberler: kategoriler + haber CRUD (elle yazılmış, kategori/all filtreli)
 export default function newsRoutes(app) {
@@ -38,10 +39,14 @@ export default function newsRoutes(app) {
     }
   });
 
-  app.get("/api/news/:id", async (req, res) => {
+  // Tek haber: pasif kayıtları yalnızca giriş yapmış yönetici görebilir
+  app.get("/api/news/:id", softAuth, async (req, res) => {
     try {
       const { rows } = await pool.query("SELECT * FROM news WHERE id = $1", [req.params.id]);
       if (rows.length === 0) return res.status(404).json({ error: "Haber bulunamadı" });
+      if (!rows[0].is_active && !req.user) {
+        return res.status(404).json({ error: "Haber bulunamadı" });
+      }
       res.json(rows[0]);
     } catch (err) {
       console.error(err);

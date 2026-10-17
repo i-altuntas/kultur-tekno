@@ -1,17 +1,58 @@
 import { pool } from "../db.js";
+import { softAuth } from "./auth.js";
+
+// Bu dosyadaki sorgular tablo/kolon ADLARINI string olarak içerir — çünkü SQL'de
+// identifier bind parametresi ($1) olarak geçilemez; yalnızca DEĞERLER geçilebilir
+// (ve aşağıda her değer $1/$2... ile geçiliyor).
+//
+// Güvenlik bu yüzden "çağıran doğru şeyi gönderir" varsayımına bırakılmaz:
+// identifier'lar kayıt anında katı bir desenle doğrulanır ve tablo adları sabit
+// bir allowlist'e karşı kontrol edilir. Desene uymayan bir ad sunucuyu AÇILIŞTA
+// çökertir — sessizce güvensiz bir uç yayına girmesinden iyidir.
+const SAFE_IDENT = /^[a-z_][a-z0-9_]*$/; // yalnızca küçük harf/rakam/alt çizgi
+const ALLOWED_TABLES = new Set([
+  "kose_yazilari",
+  "egitici_yazilar",
+  "arduino_projeleri",
+  "kurs_kitaplari",
+]);
+
+function assertIdent(name, kind) {
+  if (typeof name !== "string" || !SAFE_IDENT.test(name)) {
+    throw new Error(`Güvensiz ${kind} adı reddedildi: ${JSON.stringify(name)}`);
+  }
+  return `"${name}"`; // altırnalanmış (quoted) identifier
+}
 
 // Genel CRUD fabrikası (köşe yazıları, eğitici yazılar, arduino projeleri).
-// table/cols sabit allowlist'ten gelir; SQL enjeksiyonu riski yoktur.
 export function registerResource(app, table, cols, required, label) {
+  if (!ALLOWED_TABLES.has(table)) {
+    throw new Error(`registerResource: allowlist dışı tablo: ${table}`);
+  }
+  const T = assertIdent(table, "tablo");
+  cols.forEach((c) => assertIdent(c, "kolon"));
+  required.forEach((c) => assertIdent(c, "kolon"));
+
+  // Sorgu metinleri BURADA, kaydın bir kez çalıştığı anda kurulur. İstek işleyen
+  // fonksiyonlar bu sabitleri olduğu gibi kullanır; her istekte yeniden SQL metni
+  // kurgulanmaz. Böylece değişken yalnızca değerlerde ($1/$2) kalır.
+  const Q = {
+    listActive: `SELECT * FROM ${T} WHERE is_active = true ORDER BY created_at DESC`,
+    listAll: `SELECT * FROM ${T} ORDER BY created_at DESC`,
+    byId: `SELECT * FROM ${T} WHERE id = $1`,
+    setActive: `UPDATE ${T} SET is_active = $1 WHERE id = $2 RETURNING *`,
+    remove: `DELETE FROM ${T} WHERE id = $1`,
+  };
+  // Olası her kolon kombinasyonu için INSERT metnini önceden üretmek yerine,
+  // kolon listesini doğrulanmış adlardan derleyen küçük bir yardımcı kullanılır.
+  const buildInsert = (keys) =>
+    `INSERT INTO ${T} (${keys.map((k) => `"${k}"`).join(", ")}) ` +
+    `VALUES (${keys.map((_, i) => `$${i + 1}`).join(", ")}) RETURNING *`;
   // Listele (varsayılan aktif; ?all=1 ile pasifler dahil)
   app.get(`/api/${table}`, async (req, res) => {
     try {
       const includeInactive = req.query.all === "1" || req.query.all === "true";
-      const sql =
-        `SELECT * FROM ${table}` +
-        (includeInactive ? "" : " WHERE is_active = true") +
-        " ORDER BY created_at DESC";
-      const r = await pool.query(sql);
+      const r = await pool.query(includeInactive ? Q.listAll : Q.listActive);
       res.json(r.rows);
     } catch (err) {
       console.error(err);
@@ -19,11 +60,14 @@ export function registerResource(app, table, cols, required, label) {
     }
   });
 
-  // Tek kayıt (aktif/pasif fark etmez)
-  app.get(`/api/${table}/:id`, async (req, res) => {
+  // Tek kayıt — pasif kayıtları yalnızca giriş yapmış yönetici görebilir
+  app.get(`/api/${table}/:id`, softAuth, async (req, res) => {
     try {
-      const { rows } = await pool.query(`SELECT * FROM ${table} WHERE id = $1`, [req.params.id]);
+      const { rows } = await pool.query(Q.byId, [req.params.id]);
       if (rows.length === 0) return res.status(404).json({ error: `${label} bulunamadı` });
+      if (rows[0].is_active === false && !req.user) {
+        return res.status(404).json({ error: `${label} bulunamadı` });
+      }
       res.json(rows[0]);
     } catch (err) {
       console.error(err);
@@ -40,9 +84,8 @@ export function registerResource(app, table, cols, required, label) {
       const keys = cols.filter((c) => req.body[c] !== undefined && req.body[c] !== "");
       for (const f of required) if (!keys.includes(f)) keys.push(f);
       const values = keys.map((k) => req.body[k]);
-      const placeholders = keys.map((_, i) => `$${i + 1}`);
-      const sql = `INSERT INTO ${table} (${keys.join(", ")}) VALUES (${placeholders.join(", ")}) RETURNING *`;
-      const { rows } = await pool.query(sql, values);
+      // keys yalnızca doğrulanmış cols/required içinden gelir — istek gövdesinden değil
+      const { rows } = await pool.query(buildInsert(keys), values);
       res.status(201).json(rows[0]);
     } catch (err) {
       console.error(err);
@@ -57,10 +100,7 @@ export function registerResource(app, table, cols, required, label) {
       if (typeof is_active !== "boolean") {
         return res.status(400).json({ error: "is_active (true/false) gerekli" });
       }
-      const { rows } = await pool.query(
-        `UPDATE ${table} SET is_active = $1 WHERE id = $2 RETURNING *`,
-        [is_active, req.params.id]
-      );
+      const { rows } = await pool.query(Q.setActive, [is_active, req.params.id]);
       if (rows.length === 0) return res.status(404).json({ error: `${label} bulunamadı` });
       res.json(rows[0]);
     } catch (err) {
@@ -72,7 +112,7 @@ export function registerResource(app, table, cols, required, label) {
   // Sil
   app.delete(`/api/${table}/:id`, async (req, res) => {
     try {
-      const { rowCount } = await pool.query(`DELETE FROM ${table} WHERE id = $1`, [req.params.id]);
+      const { rowCount } = await pool.query(Q.remove, [req.params.id]);
       if (rowCount === 0) return res.status(404).json({ error: `${label} bulunamadı` });
       res.json({ ok: true });
     } catch (err) {

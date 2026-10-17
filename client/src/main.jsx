@@ -14,6 +14,7 @@ import Plans from "./components/plans/Plans.jsx";
 import KursKitaplari from "./components/kurs/KursKitaplari.jsx";
 import KursKitapDetail from "./components/kurs/KursKitapDetail.jsx";
 import Admin from "./components/admin/Admin.jsx";
+import RequireAuth from "./components/admin/RequireAuth.jsx";
 import TopNav from "./components/common/TopNav.jsx";
 import "./styles.css";
 
@@ -24,7 +25,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/haber/:id" element={<Reader />} />
-        <Route path="/pasif" element={<Passive />} />
+        {/* Pasif haberler yayınlanmamış içerik gösterir → oturum zorunlu */}
+        <Route
+          path="/pasif"
+          element={
+            <RequireAuth>
+              <Passive />
+            </RequireAuth>
+          }
+        />
         <Route path="/kose-yazilari" element={<Columns />} />
         <Route
           path="/kose-yazilari/:id"
@@ -45,7 +54,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/planlar" element={<Plans />} />
         <Route path="/kurs-kitaplari" element={<KursKitaplari />} />
         <Route path="/kurs-kitaplari/:id" element={<KursKitapDetail />} />
-        <Route path="/panel" element={<Admin />} />
+        <Route
+          path="/panel"
+          element={
+            <RequireAuth>
+              <Admin />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

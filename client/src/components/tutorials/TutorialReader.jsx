@@ -68,6 +68,80 @@ export default function TutorialReader() {
   const playingRef = useRef(false);
   const toggleRef = useRef(() => {});
 
+  // --- sayfa çevirme sesi (düşük gecikme için Web Audio) ---
+  const flipCtxRef = useRef(null);
+  const flipBufRef = useRef(null);
+  const flipStateRef = useRef("read");
+  const [flipSound, setFlipSound] = useState(() => {
+    try {
+      return localStorage.getItem("kt_flip_sound") !== "0";
+    } catch {
+      return true;
+    }
+  });
+  const flipSoundRef = useRef(flipSound);
+  flipSoundRef.current = flipSound;
+
+  // çevirme sesini bir kez yükle + çöz
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        flipCtxRef.current = ctx;
+        const res = await fetch("/sesler/sayfa-cevir.mp3");
+        const arr = await res.arrayBuffer();
+        ctx.decodeAudioData(arr.slice(0), (buf) => {
+          if (alive) flipBufRef.current = buf;
+        });
+      } catch {
+        /* ses yoksa sessizce geç */
+      }
+    })();
+    return () => {
+      alive = false;
+      try {
+        flipCtxRef.current && flipCtxRef.current.close();
+      } catch {
+        /* yoksay */
+      }
+    };
+  }, []);
+
+  function playFlip() {
+    if (!flipSoundRef.current) return;
+    const ctx = flipCtxRef.current;
+    const buf = flipBufRef.current;
+    if (!ctx || !buf) return;
+    try {
+      if (ctx.state === "suspended") ctx.resume();
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const g = ctx.createGain();
+      // her çevirmede hafif ton/ses farkı → tekdüze olmasın
+      g.gain.value = 0.75 + Math.random() * 0.25;
+      src.playbackRate.value = 0.94 + Math.random() * 0.12;
+      src.connect(g).connect(ctx.destination);
+      src.start();
+    } catch {
+      /* yoksay */
+    }
+  }
+
+  function toggleFlipSound() {
+    setFlipSound((v) => {
+      const nv = !v;
+      try {
+        localStorage.setItem("kt_flip_sound", nv ? "1" : "0");
+      } catch {
+        /* yoksay */
+      }
+      return nv;
+    });
+  }
+
   // veriyi çek
   useEffect(() => {
     let alive = true;
@@ -304,6 +378,12 @@ export default function TutorialReader() {
             className="flip-book"
             onFlip={(e) => setSpreadIdx(e.data)}
             onChangeOrientation={(e) => setOrient(e.data)}
+            onChangeState={(e) => {
+              const st = e.data;
+              // çevirme animasyonu başlarken bir kez çal
+              if (st === "flipping" && flipStateRef.current !== "flipping") playFlip();
+              flipStateRef.current = st;
+            }}
           >
             <Cover yazi={yazi} />
 
@@ -332,6 +412,14 @@ export default function TutorialReader() {
           </HTMLFlipBook>
           <p className="book-tip">
             Sayfaları çevirmek için kenarlardan sürükle · Oynat/Duraklat için <b>Boşluk</b> tuşu
+            <button
+              type="button"
+              className={`flip-snd-btn ${flipSound ? "on" : ""}`}
+              onClick={toggleFlipSound}
+              title="Sayfa çevirme sesini aç/kapat"
+            >
+              {flipSound ? "🔉 sayfa sesi açık" : "🔇 sayfa sesi kapalı"}
+            </button>
           </p>
         </div>
       )}

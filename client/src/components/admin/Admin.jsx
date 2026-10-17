@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getNews, createNews, deleteNews, setActive, pickBackupFolder, runBackup as runBackupApi, restoreDatabase } from "../../api.js";
+import AccountBar from "./AccountBar.jsx";
 import WritingAdmin from "./WritingAdmin.jsx";
 import TutorialPagesAdmin from "./TutorialPagesAdmin.jsx";
 import PlansAdmin from "./PlansAdmin.jsx";
@@ -200,9 +201,12 @@ export default function Admin() {
             <span className="tag" style={{ marginLeft: 10 }}>// yönetim paneli</span>
           </h1>
         </div>
-        <Link to="/" className="panel-link">
-          [ ← SİTEYE DÖN ]
-        </Link>
+        <div className="masthead-right">
+          <Link to="/" className="panel-link">
+            [ ← SİTEYE DÖN ]
+          </Link>
+          <AccountBar />
+        </div>
       </header>
 
       <section className="backup-bar">

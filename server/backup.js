@@ -8,7 +8,19 @@ import { pool } from "./db.js";
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_PUBLIC = path.resolve(SERVER_DIR, "..", "client", "public");
 
-const TABLES = ["news", "kose_yazilari", "egitici_yazilar", "egitici_sayfalar", "arduino_projeleri", "kurs_kitaplari", "kurs_bolumleri", "kurs_kitap_sayfalari", "planlar", "plan_satirlari"];
+const TABLE_QUERIES = {
+  news: "SELECT * FROM news ORDER BY id",
+  kose_yazilari: "SELECT * FROM kose_yazilari ORDER BY id",
+  egitici_yazilar: "SELECT * FROM egitici_yazilar ORDER BY id",
+  egitici_sayfalar: "SELECT * FROM egitici_sayfalar ORDER BY id",
+  arduino_projeleri: "SELECT * FROM arduino_projeleri ORDER BY id",
+  kurs_kitaplari: "SELECT * FROM kurs_kitaplari ORDER BY id",
+  kurs_bolumleri: "SELECT * FROM kurs_bolumleri ORDER BY id",
+  kurs_kitap_sayfalari: "SELECT * FROM kurs_kitap_sayfalari ORDER BY id",
+  planlar: "SELECT * FROM planlar ORDER BY id",
+  plan_satirlari: "SELECT * FROM plan_satirlari ORDER BY id",
+};
+const TABLES = Object.keys(TABLE_QUERIES);
 const IMG_RE = /\[img\]\s*(\S+?)\s*(?:\|[^\]]*)?\[\/img\]/gi;
 
 function extFrom(ct, url) {
@@ -42,10 +54,13 @@ function pgDump(outFile) {
       "-p", String(process.env.PGPORT || 5432),
       "-U", process.env.PGUSER || "postgres",
       "-d", process.env.PGDATABASE || "citynews",
+      "-T", "admin_users",
+      "-T", "admin_sessions",
+      "-T", "admin_audit_logs",
       "-f", outFile,
     ];
     const env = { ...process.env, PGPASSWORD: process.env.PGPASSWORD || "" };
-    execFile(bin, args, { env, windowsHide: true }, (err, so, se) => {
+    execFile(bin, args, { env, windowsHide: true }, (err, _so, se) => {
       if (err) return reject(new Error((se || err.message || "").trim()));
       resolve();
     });
@@ -107,7 +122,7 @@ export async function runBackup({ targetPath, downloadImages = true }) {
   const counts = {};
   const urls = new Set();
   for (const t of TABLES) {
-    const { rows } = await pool.query(`SELECT * FROM ${t} ORDER BY id`);
+    const { rows } = await pool.query(TABLE_QUERIES[t]);
     data.tables[t] = rows;
     counts[t] = rows.length;
     for (const r of rows) {

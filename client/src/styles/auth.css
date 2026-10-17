@@ -1,0 +1,110 @@
+/* ---- panel giriş ekranı + hesap çubuğu ---- */
+
+.login-page { display: flex; align-items: center; justify-content: center; }
+
+.login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-h));
+  width: 100%;
+  padding: 30px 0;
+}
+
+.login-card {
+  width: min(430px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 30px 26px 24px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.login-brand { text-align: center; margin-bottom: 6px; }
+.login-brand .brand-mark { display: block; margin-bottom: 8px; }
+.login-brand h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.login-brand h1 .accent { color: var(--cyan); text-shadow: var(--glow) rgba(0, 240, 255, 0.5); }
+.login-brand .tag { display: block; margin-top: 6px; }
+
+.login-note {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: center;
+  margin: 14px 0 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.login-form { gap: 14px; }
+.login-form .btn.primary { margin-top: 4px; width: 100%; justify-content: center; }
+
+/* parola alanı + göster/gizle */
+.pw-field { position: relative; display: block; }
+.pw-field input { width: 100%; padding-right: 64px; }
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.pw-toggle:hover { color: var(--cyan); border-color: var(--cyan); }
+
+.login-foot { margin-top: 20px; text-align: center; }
+
+/* ---- hesap çubuğu (panel üst köşesi) ---- */
+.account-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.account-who {
+  color: var(--lime);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pw-change {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  width: min(320px, 86vw);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+.pw-change-title {
+  color: var(--cyan);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.pw-change input { width: 100%; }
+
+@media (max-width: 720px) {
+  .account-bar { width: 100%; justify-content: flex-start; }
+  .pw-change { right: auto; left: 0; }
+}

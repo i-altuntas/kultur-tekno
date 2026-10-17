@@ -59,6 +59,9 @@
 .flip-back-in { display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .flip-end { font-family: "JetBrains Mono", monospace; letter-spacing: 0.2em; color: var(--lime); font-size: 18px; }
 .book-tip { color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 12px; margin-top: 16px; text-align: center; }
+.flip-snd-btn { display: inline-block; margin-left: 10px; padding: 3px 10px; border: 1px solid var(--muted); border-radius: 999px; background: transparent; color: var(--muted); font-family: "JetBrains Mono", monospace; font-size: 11px; cursor: pointer; transition: all .15s ease; vertical-align: middle; }
+.flip-snd-btn:hover { border-color: var(--lime); color: var(--lime); }
+.flip-snd-btn.on { border-color: var(--lime); color: var(--lime); box-shadow: 0 0 10px -4px var(--lime); }
 
 /* panel: JSON ile kitap içe aktarma kutusu */
 .json-import {

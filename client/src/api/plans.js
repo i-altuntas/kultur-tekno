@@ -1,31 +1,19 @@
 // Planlar API'si
+import { apiJson, apiSend } from "./http.js";
 
 export async function getPlans(q = "") {
   const qs = q ? `?q=${encodeURIComponent(q)}` : "";
-  const res = await fetch(`/api/planlar${qs}`);
-  if (!res.ok) throw new Error("Planlar alınamadı");
-  return res.json();
+  return apiJson(`/api/planlar${qs}`, undefined, "Planlar alınamadı");
 }
 
 export async function getPlanTable(id) {
-  const res = await fetch(`/api/planlar/${id}/tablo`);
-  if (!res.ok) throw new Error("Plan tablosu alınamadı");
-  return res.json();
+  return apiJson(`/api/planlar/${id}/tablo`, undefined, "Plan tablosu alınamadı");
 }
 
 export async function importPlan(data) {
-  const res = await fetch("/api/planlar/import", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  const j = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(j.error || "Plan içe aktarılamadı");
-  return j;
+  return apiSend("/api/planlar/import", "POST", data, "Plan içe aktarılamadı");
 }
 
 export async function deletePlan(id) {
-  const res = await fetch(`/api/planlar/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Plan silinemedi");
-  return res.json();
+  return apiJson(`/api/planlar/${id}`, { method: "DELETE" }, "Plan silinemedi");
 }

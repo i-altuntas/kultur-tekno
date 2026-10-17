@@ -1,46 +1,26 @@
 // Haberler API'si. Vite proxy /api -> http://localhost:4000
+import { apiJson, apiSend } from "./http.js";
 
 export async function getNews(category, { all = false } = {}) {
   const params = new URLSearchParams();
   if (category && category !== "HEPSİ") params.set("category", category);
   if (all) params.set("all", "1");
   const qs = params.toString();
-  const res = await fetch(`/api/news${qs ? `?${qs}` : ""}`);
-  if (!res.ok) throw new Error("Haberler alınamadı");
-  return res.json();
+  return apiJson(`/api/news${qs ? `?${qs}` : ""}`, undefined, "Haberler alınamadı");
 }
 
 export async function getCategories() {
-  const res = await fetch("/api/categories");
-  if (!res.ok) throw new Error("Kategoriler alınamadı");
-  return res.json();
+  return apiJson("/api/categories", undefined, "Kategoriler alınamadı");
 }
 
 export async function createNews(data) {
-  const res = await fetch("/api/news", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const e = await res.json().catch(() => ({}));
-    throw new Error(e.error || "Haber eklenemedi");
-  }
-  return res.json();
+  return apiSend("/api/news", "POST", data, "Haber eklenemedi");
 }
 
 export async function setActive(id, is_active) {
-  const res = await fetch(`/api/news/${id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ is_active }),
-  });
-  if (!res.ok) throw new Error("Durum değiştirilemedi");
-  return res.json();
+  return apiSend(`/api/news/${id}`, "PATCH", { is_active }, "Durum değiştirilemedi");
 }
 
 export async function deleteNews(id) {
-  const res = await fetch(`/api/news/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Haber silinemedi");
-  return res.json();
+  return apiJson(`/api/news/${id}`, { method: "DELETE" }, "Haber silinemedi");
 }

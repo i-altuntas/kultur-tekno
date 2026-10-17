@@ -1,6 +1,6 @@
 # Kültür Tekno — Dokploy / Docker Compose dağıtımı
-# Dokploy'da: bu depoyu "Compose" tipi uygulama olarak ekleyin, ortam değişkenlerini panelden girin,
-# ve "app" servisinin 4000 portuna bir alan adı (domain) yönlendirin.
+# Dokploy'da "Compose" tipi uygulama olarak ekleyin, ortam değişkenlerini
+# panelden girin ve "app" servisinin 4000 portuna alan adı yönlendirin.
 
 services:
   db:
@@ -13,7 +13,9 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-citynews}"]
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-citynews}
       interval: 5s
       timeout: 5s
       retries: 20
@@ -29,15 +31,23 @@ services:
       PGUSER: ${PGUSER:-postgres}
       PGPASSWORD: ${PGPASSWORD:-postgres}
       PGDATABASE: ${PGDATABASE:-citynews}
-      PORT: 4000
-      NODE_ENV: production
+      PORT: ${PORT:-4000}
+      NODE_ENV: ${NODE_ENV:-production}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_NAME: ${ADMIN_NAME:-Yönetici}
+      SESSION_HOURS: ${SESSION_HOURS:-8}
+      MAX_SESSION_HOURS: ${MAX_SESSION_HOURS:-24}
+      MAX_FAILED_LOGINS: ${MAX_FAILED_LOGINS:-5}
+      LOCK_MINUTES: ${LOCK_MINUTES:-15}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - uploads:/app/uploads
     ports:
-      # Dokploy genelde alan adını otomatik bağlar; doğrudan erişim için de açık bırakıldı.
+      # Dokploy alan adını otomatik bağlar; doğrudan erişim için de açıktır.
       - "4000:4000"
 
 volumes:
