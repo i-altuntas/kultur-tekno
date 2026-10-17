@@ -1,41 +1,37 @@
 # Kültür Tekno — Dokploy / Docker Compose dağıtımı
-# Dokploy'da "Compose" tipi uygulama olarak ekleyin, ortam değişkenlerini
-# panelden girin ve "app" servisinin 4000 portuna alan adı yönlendirin.
 
 services:
   db:
     image: postgres:16-alpine
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: ${PGUSER:-postgres}
-      POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
-      POSTGRES_DB: ${PGDATABASE:-citynews}
-      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: citynews
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${PGPASSWORD:-kulturtekno_db_2026}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - kulturtekno_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -U ${PGUSER:-postgres} -d ${PGDATABASE:-citynews}
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 20
+      start_period: 15s
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     expose:
       - "4000"
     environment:
       PGHOST: db
       PGPORT: 5432
-      PGUSER: ${PGUSER:-postgres}
-      PGPASSWORD: ${PGPASSWORD:-postgres}
-      PGDATABASE: ${PGDATABASE:-citynews}
-      PORT: ${PORT:-4000}
-      NODE_ENV: ${NODE_ENV:-production}
+      PGUSER: postgres
+      PGPASSWORD: ${PGPASSWORD:-kulturtekno_db_2026}
+      PGDATABASE: citynews
+      PORT: 4000
+      NODE_ENV: production
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ADMIN_NAME: ${ADMIN_NAME:-Yönetici}
@@ -48,8 +44,8 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - uploads_data:/app/uploads
+      - kulturtekno_uploads:/app/uploads
 
 volumes:
-  postgres_data:
-  uploads_data:
+  kulturtekno_pgdata:
+  kulturtekno_uploads:
