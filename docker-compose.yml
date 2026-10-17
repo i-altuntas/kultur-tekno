@@ -8,14 +8,10 @@ services:
       POSTGRES_DB: citynews
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${PGPASSWORD:-kulturtekno_db_2026}
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pg16_clean
     volumes:
-      - kulturtekno_pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 15s
+      - kulturtekno_pg16:/var/lib/postgresql/data
 
   app:
     build:
@@ -41,11 +37,10 @@ services:
       LOCK_MINUTES: ${LOCK_MINUTES:-15}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     volumes:
       - kulturtekno_uploads:/app/uploads
 
 volumes:
-  kulturtekno_pgdata:
+  kulturtekno_pg16:
   kulturtekno_uploads:

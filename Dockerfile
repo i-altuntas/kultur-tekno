@@ -33,5 +33,5 @@ RUN mkdir -p /app/uploads/kapaklar
 
 EXPOSE 4000
 
-# Önce şema/tabloları oluştur (idempotent), sonra sunucuyu başlat
-CMD ["sh", "-c", "node init-db.js && node index.js"]
+# Önce veritabanının hazır olmasını bekle, şemayı kur ve sunucuyu başlat
+CMD ["sh", "-c", "node wait-db.js && node init-db.js && node index.js"]
