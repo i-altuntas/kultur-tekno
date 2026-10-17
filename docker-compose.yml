@@ -4,14 +4,15 @@
 
 services:
   db:
-    image: postgres:18-alpine
-    restart: unless-stopped
+    image: postgres:16-alpine
+    restart: always
     environment:
       POSTGRES_USER: ${PGUSER:-postgres}
       POSTGRES_PASSWORD: ${PGPASSWORD:-postgres}
       POSTGRES_DB: ${PGDATABASE:-citynews}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD-SHELL
@@ -24,7 +25,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: unless-stopped
+    restart: always
+    expose:
+      - "4000"
     environment:
       PGHOST: db
       PGPORT: 5432
@@ -45,11 +48,8 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - uploads:/app/uploads
-    ports:
-      # Dokploy alan adını otomatik bağlar; doğrudan erişim için de açıktır.
-      - "4000:4000"
+      - uploads_data:/app/uploads
 
 volumes:
-  db-data:
-  uploads:
+  postgres_data:
+  uploads_data:
