@@ -7,8 +7,10 @@ import { pool } from "./db.js";
 // Site-göreli görseller (/devreler/...) buradan kopyalanır
 const SERVER_DIR = path.dirname(fileURLToPath(import.meta.url));
 const CLIENT_PUBLIC = path.resolve(SERVER_DIR, "..", "client", "public");
+const DIST_DIR = process.env.DIST_DIR || path.resolve(SERVER_DIR, "..", "client", "dist");
+const UPLOAD_DIR = process.env.UPLOAD_DIR || CLIENT_PUBLIC;
 
-const TABLE_QUERIES = {
+export const TABLE_QUERIES = {
   news: "SELECT * FROM news ORDER BY id",
   kose_yazilari: "SELECT * FROM kose_yazilari ORDER BY id",
   egitici_yazilar: "SELECT * FROM egitici_yazilar ORDER BY id",
@@ -20,8 +22,224 @@ const TABLE_QUERIES = {
   planlar: "SELECT * FROM planlar ORDER BY id",
   plan_satirlari: "SELECT * FROM plan_satirlari ORDER BY id",
 };
-const TABLES = Object.keys(TABLE_QUERIES);
+export const TABLES = Object.keys(TABLE_QUERIES);
 const IMG_RE = /\[img\]\s*(\S+?)\s*(?:\|[^\]]*)?\[\/img\]/gi;
+
+// Tüm içerik tablolarının ve kolonlarının hedef ortamda var olmasını garanti eder (idempotent)
+export async function ensureContentSchema(db = pool) {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS news (
+      id         SERIAL PRIMARY KEY,
+      title      TEXT NOT NULL,
+      summary    TEXT,
+      content    TEXT NOT NULL,
+      category   TEXT NOT NULL DEFAULT 'GÜNDEM',
+      image_url  TEXT,
+      is_active  BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("ALTER TABLE news ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS kose_yazilari (
+      id         SERIAL PRIMARY KEY,
+      author     TEXT NOT NULL DEFAULT 'Editör',
+      title      TEXT NOT NULL,
+      summary    TEXT,
+      content    TEXT NOT NULL,
+      is_active  BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS egitici_yazilar (
+      id          SERIAL PRIMARY KEY,
+      title       TEXT NOT NULL,
+      summary     TEXT,
+      content     TEXT NOT NULL,
+      level       TEXT NOT NULL DEFAULT 'Başlangıç',
+      cover_style TEXT NOT NULL DEFAULT 'aurora',
+      is_active   BOOLEAN NOT NULL DEFAULT true,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("ALTER TABLE egitici_yazilar ADD COLUMN IF NOT EXISTS cover_style TEXT NOT NULL DEFAULT 'aurora'");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS egitici_sayfalar (
+      id         SERIAL PRIMARY KEY,
+      yazi_id    INTEGER NOT NULL REFERENCES egitici_yazilar(id) ON DELETE CASCADE,
+      page_no    INTEGER NOT NULL DEFAULT 1,
+      content    TEXT,
+      image_url  TEXT,
+      audio_url  TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("ALTER TABLE egitici_sayfalar ADD COLUMN IF NOT EXISTS audio_url TEXT");
+  await db.query("CREATE INDEX IF NOT EXISTS idx_egitici_sayfalar_yazi ON egitici_sayfalar(yazi_id, page_no)");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS arduino_projeleri (
+      id         SERIAL PRIMARY KEY,
+      title      TEXT NOT NULL,
+      summary    TEXT,
+      content    TEXT NOT NULL,
+      image_url  TEXT,
+      is_active  BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS planlar (
+      id          SERIAL PRIMARY KEY,
+      title       TEXT NOT NULL,
+      description TEXT,
+      columns     JSONB NOT NULL DEFAULT '[]'::jsonb,
+      meta        JSONB NOT NULL DEFAULT '{}'::jsonb,
+      is_active   BOOLEAN NOT NULL DEFAULT true,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("ALTER TABLE planlar ADD COLUMN IF NOT EXISTS meta JSONB NOT NULL DEFAULT '{}'::jsonb");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS plan_satirlari (
+      id         SERIAL PRIMARY KEY,
+      plan_id    INTEGER NOT NULL REFERENCES planlar(id) ON DELETE CASCADE,
+      row_no     INTEGER NOT NULL DEFAULT 1,
+      data       JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("CREATE INDEX IF NOT EXISTS idx_plan_satirlari_plan ON plan_satirlari(plan_id, row_no)");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS kurs_kitaplari (
+      id          SERIAL PRIMARY KEY,
+      title       TEXT NOT NULL,
+      short_title TEXT,
+      author      TEXT,
+      description TEXT,
+      cover_url   TEXT,
+      is_active   BOOLEAN NOT NULL DEFAULT true,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("ALTER TABLE kurs_kitaplari ADD COLUMN IF NOT EXISTS short_title TEXT");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS kurs_bolumleri (
+      id         SERIAL PRIMARY KEY,
+      kitap_id   INTEGER NOT NULL REFERENCES kurs_kitaplari(id) ON DELETE CASCADE,
+      bolum_no   INTEGER NOT NULL DEFAULT 1,
+      title      TEXT,
+      content    TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("CREATE INDEX IF NOT EXISTS idx_kurs_bolumleri ON kurs_bolumleri(kitap_id, bolum_no)");
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS kurs_kitap_sayfalari (
+      id         SERIAL PRIMARY KEY,
+      kitap_id   INTEGER NOT NULL REFERENCES kurs_kitaplari(id) ON DELETE CASCADE,
+      page_no    INTEGER NOT NULL DEFAULT 1,
+      content    TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await db.query("CREATE INDEX IF NOT EXISTS idx_kurs_kitap_sayfalari ON kurs_kitap_sayfalari(kitap_id, page_no)");
+}
+
+// Yüklenen kitap kapaklarını (/kapaklar/...) JSON yedeğine base64 olarak dahil eder
+export function collectCoverAssets() {
+  const kapaklar = {};
+  const dirs = [
+    path.join(UPLOAD_DIR, "kapaklar"),
+    path.join(CLIENT_PUBLIC, "kapaklar"),
+    path.join(DIST_DIR, "kapaklar"),
+  ];
+  const seen = new Set();
+  for (const dir of dirs) {
+    if (!fs.existsSync(dir)) continue;
+    let entries = [];
+    try {
+      entries = fs.readdirSync(dir);
+    } catch {
+      continue;
+    }
+    for (const name of entries) {
+      if (seen.has(name)) continue;
+      if (!/\.(jpg|jpeg|png|webp|gif|avif)$/i.test(name)) continue;
+      const full = path.join(dir, name);
+      try {
+        const st = fs.statSync(full);
+        if (st.isFile() && st.size > 0 && st.size <= 10 * 1024 * 1024) {
+          kapaklar[name] = fs.readFileSync(full).toString("base64");
+          seen.add(name);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  return { kapaklar };
+}
+
+// İçe aktarma sırasında yedekteki kapak görsellerini hedef ortamın UPLOAD_DIR/kapaklar klasörüne yazar
+export function restoreCoverAssets(assets) {
+  if (!assets || typeof assets !== "object" || !assets.kapaklar || typeof assets.kapaklar !== "object") {
+    return 0;
+  }
+  const dir = path.join(UPLOAD_DIR, "kapaklar");
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+  } catch {
+    return 0;
+  }
+  let written = 0;
+  for (const [rawName, b64] of Object.entries(assets.kapaklar)) {
+    const safeName = path.basename(String(rawName || ""));
+    if (!safeName || !/\.(jpg|jpeg|png|webp|gif|avif)$/i.test(safeName)) continue;
+    if (typeof b64 !== "string" || !b64.length) continue;
+    try {
+      const buf = Buffer.from(b64, "base64");
+      if (!buf.length) continue;
+      fs.writeFileSync(path.join(dir, safeName), buf);
+      written++;
+    } catch {
+      /* ignore */
+    }
+  }
+  return written;
+}
+
+// Tüm veritabanı tablolarını ve kapak görsellerini dışa aktarır
+export async function exportDatabasePayload() {
+  await ensureContentSchema(pool);
+  const tables = {};
+  const counts = {};
+  let totalRows = 0;
+  for (const t of TABLES) {
+    const { rows } = await pool.query(TABLE_QUERIES[t]);
+    tables[t] = rows;
+    counts[t] = rows.length;
+    totalRows += rows.length;
+  }
+  const assets = collectCoverAssets();
+  return {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    totalRows,
+    counts,
+    tables,
+    assets,
+  };
+}
 
 function extFrom(ct, url) {
   ct = (ct || "").toLowerCase();
@@ -106,6 +324,17 @@ export function pickFolder() {
   });
 }
 
+function resolveLocalAsset(rel) {
+  for (const baseDir of [UPLOAD_DIR, CLIENT_PUBLIC, DIST_DIR]) {
+    const absBase = path.resolve(baseDir);
+    const candidate = path.resolve(absBase, rel);
+    if (candidate.startsWith(absBase) && fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
 export async function runBackup({ targetPath, downloadImages = true }) {
   if (!targetPath || !String(targetPath).trim()) {
     throw new Error("Yedekleme yolu boş. Önce bir klasör seç.");
@@ -118,13 +347,11 @@ export async function runBackup({ targetPath, downloadImages = true }) {
   fs.mkdirSync(folder, { recursive: true });
 
   // 1) Tabloları JSON'a aktar + görsel URL'lerini topla
-  const data = { exportedAt: new Date().toISOString(), tables: {} };
-  const counts = {};
+  const data = await exportDatabasePayload();
+  const counts = data.counts;
   const urls = new Set();
   for (const t of TABLES) {
-    const { rows } = await pool.query(TABLE_QUERIES[t]);
-    data.tables[t] = rows;
-    counts[t] = rows.length;
+    const rows = data.tables[t] || [];
     for (const r of rows) {
       if (r.image_url) urls.add(r.image_url);
       if (r.cover_url) urls.add(r.cover_url);
@@ -136,7 +363,7 @@ export async function runBackup({ targetPath, downloadImages = true }) {
       }
     }
   }
-  fs.writeFileSync(path.join(folder, "data.json"), JSON.stringify(data, null, 2), "utf8");
+  fs.writeFileSync(path.join(folder, "data.json"), JSON.stringify(data), "utf8");
 
   // 2) pg_dump ile SQL yedeği (varsa)
   let sqlOk = false;
@@ -148,59 +375,63 @@ export async function runBackup({ targetPath, downloadImages = true }) {
     sqlNote = e.message || "pg_dump çalıştırılamadı";
   }
 
-  // 3) Görselleri indir
+  // 3) Görselleri indir (paralel işçilerle hızlı indirme)
   const img = { total: urls.size, downloaded: 0, failed: 0, skipped: 0 };
   if (downloadImages && urls.size) {
     const imgDir = path.join(folder, "gorseller");
     fs.mkdirSync(imgDir, { recursive: true });
-    const mapLines = [];
-    let i = 0;
-    for (const u of urls) {
-      i++;
-      const idx = String(i).padStart(3, "0");
-      try {
-        if (/^https?:\/\//i.test(u)) {
-          // Dış URL → indir (User-Agent başlığıyla; 429/503'te yeniden dene)
-          let res;
-          for (let attempt = 0; ; attempt++) {
-            const ctrl = AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined;
-            res = await fetch(u, {
-              headers: { "User-Agent": "KulturTekno-Backup/1.0 (yedekleme)" },
-              ...(ctrl ? { signal: ctrl } : {}),
-            });
-            if (res.ok) break;
-            if ((res.status === 429 || res.status === 503) && attempt < 2) {
-              await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
-              continue;
+    const urlList = Array.from(urls);
+    const mapLines = new Array(urlList.length);
+    let cursor = 0;
+
+    async function worker() {
+      while (cursor < urlList.length) {
+        const idxZero = cursor++;
+        const u = urlList[idxZero];
+        const idx = String(idxZero + 1).padStart(3, "0");
+        try {
+          if (/^https?:\/\//i.test(u)) {
+            let res;
+            for (let attempt = 0; ; attempt++) {
+              const ctrl = AbortSignal.timeout ? AbortSignal.timeout(8000) : undefined;
+              res = await fetch(u, {
+                headers: { "User-Agent": "KulturTekno-Backup/1.0 (yedekleme)" },
+                ...(ctrl ? { signal: ctrl } : {}),
+              });
+              if (res.ok) break;
+              if ((res.status === 429 || res.status === 503) && attempt < 1) {
+                await new Promise((r) => setTimeout(r, 800));
+                continue;
+              }
+              throw new Error("HTTP " + res.status);
             }
-            throw new Error("HTTP " + res.status);
+            const buf = Buffer.from(await res.arrayBuffer());
+            const file = idx + extFrom(res.headers.get("content-type"), u);
+            fs.writeFileSync(path.join(imgDir, file), buf);
+            img.downloaded++;
+            mapLines[idxZero] = `${file}  <-  (web) ${u}`;
+          } else if (u.startsWith("/")) {
+            const rel = decodeURIComponent(u.split("?")[0]).replace(/^\/+/, "");
+            const src = resolveLocalAsset(rel);
+            if (!src) throw new Error("yerel dosya yok");
+            const base = path.basename(src).replace(/[^\w.\-]+/g, "_");
+            const file = idx + "_" + base;
+            fs.copyFileSync(src, path.join(imgDir, file));
+            img.downloaded++;
+            mapLines[idxZero] = `${file}  <-  (yerel) ${u}`;
+          } else {
+            img.skipped++;
+            mapLines[idxZero] = `${idx}  ATLANDI (desteklenmeyen): ${u.slice(0, 60)}`;
           }
-          const buf = Buffer.from(await res.arrayBuffer());
-          const file = idx + extFrom(res.headers.get("content-type"), u);
-          fs.writeFileSync(path.join(imgDir, file), buf);
-          img.downloaded++;
-          mapLines.push(`${file}  <-  (web) ${u}`);
-        } else if (u.startsWith("/")) {
-          // Site-göreli yerel dosya (/devreler/...) → client/public'ten kopyala
-          const rel = decodeURIComponent(u.split("?")[0]).replace(/^\/+/, "");
-          const src = path.resolve(CLIENT_PUBLIC, rel);
-          if (!src.startsWith(path.resolve(CLIENT_PUBLIC))) throw new Error("geçersiz yol");
-          if (!fs.existsSync(src)) throw new Error("yerel dosya yok");
-          const base = path.basename(src).replace(/[^\w.\-]+/g, "_");
-          const file = idx + "_" + base;
-          fs.copyFileSync(src, path.join(imgDir, file));
-          img.downloaded++;
-          mapLines.push(`${file}  <-  (yerel) ${u}`);
-        } else {
-          // data: veya desteklenmeyen
-          img.skipped++;
-          mapLines.push(`${idx}  ATLANDI (desteklenmeyen): ${u.slice(0, 60)}`);
+        } catch (e) {
+          img.failed++;
+          mapLines[idxZero] = `${idx}  HATA (${e.message}): ${u}`;
         }
-      } catch (e) {
-        img.failed++;
-        mapLines.push(`${idx}  HATA (${e.message}): ${u}`);
       }
     }
+
+    const concurrency = Math.min(6, urlList.length);
+    await Promise.all(Array.from({ length: concurrency }, () => worker()));
     fs.writeFileSync(path.join(imgDir, "_kaynaklar.txt"), mapLines.join("\n"), "utf8");
   }
 

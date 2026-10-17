@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { getNews, createNews, deleteNews, setActive, pickBackupFolder, runBackup as runBackupApi, restoreDatabase } from "../../api.js";
+import {
+  getNews,
+  createNews,
+  deleteNews,
+  setActive,
+  pickBackupFolder,
+  runBackup as runBackupApi,
+  downloadDatabase,
+  restoreDatabase,
+} from "../../api.js";
 import AccountBar from "./AccountBar.jsx";
 import WritingAdmin from "./WritingAdmin.jsx";
 import TutorialPagesAdmin from "./TutorialPagesAdmin.jsx";
@@ -38,11 +47,30 @@ export default function Admin() {
   const [backupPath, setBackupPath] = useState("");
   const [downloadImages, setDownloadImages] = useState(true);
   const [backupBusy, setBackupBusy] = useState(false);
+  const [exportBusy, setExportBusy] = useState(false);
   const [pickBusy, setPickBusy] = useState(false);
   const [backupMsg, setBackupMsg] = useState(null);
   const [restoreBusy, setRestoreBusy] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const contentRef = useRef(null);
   const restoreRef = useRef(null);
+
+  async function doExport() {
+    setExportBusy(true);
+    setBackupMsg({ type: "ok", text: "⏳ Veritabanı hazırlanıyor ve indiriliyor…" });
+    try {
+      const r = await downloadDatabase();
+      const total = r.totalRows || Object.values(r.counts || {}).reduce((a, b) => a + b, 0);
+      setBackupMsg({
+        type: "ok",
+        text: `✓ Veritabanı indirildi → ${r.filename} (${total} kayıt)`,
+      });
+    } catch (e) {
+      setBackupMsg({ type: "err", text: "✗ " + e.message });
+    } finally {
+      setExportBusy(false);
+    }
+  }
 
   async function onRestoreFile(e) {
     const file = e.target.files && e.target.files[0];
@@ -50,7 +78,7 @@ export default function Admin() {
     if (!file) return;
     if (!confirm("DİKKAT: Mevcut tüm veriler SİLİNİP bu yedek içe aktarılacak. Devam edilsin mi?")) return;
     setRestoreBusy(true);
-    setBackupMsg({ type: "ok", text: "⏳ Veritabanı içe aktarılıyor…" });
+    setBackupMsg({ type: "ok", text: "⏳ Veritabanı içe aktarılıyor… (büyük yedeklerde birkaç saniye sürebilir)" });
     try {
       const text = await file.text();
       let data;
@@ -59,9 +87,28 @@ export default function Admin() {
       } catch {
         throw new Error("Geçersiz JSON dosyası");
       }
-      const r = await restoreDatabase(data);
-      const total = Object.values(r.counts || {}).reduce((a, b) => a + b, 0);
-      setBackupMsg({ type: "ok", text: `✓ İçe aktarıldı — toplam ${total} kayıt geri yüklendi` });
+      let r;
+      try {
+        r = await restoreDatabase(data);
+      } catch (err) {
+        if (err.status === 409 && err.atRisk) {
+          const detail = err.atRisk.map((x) => `${x.table} (${x.rows} kayıt)`).join(", ");
+          if (!confirm(`${err.message}\n\nEtkilenecek tablolar: ${detail}\n\nYine de devam edilsin mi?`)) {
+            setBackupMsg(null);
+            return;
+          }
+          r = await restoreDatabase({ ...data, force: true });
+        } else {
+          throw err;
+        }
+      }
+      const total = r.total ?? Object.values(r.counts || {}).reduce((a, b) => a + b, 0);
+      await load();
+      setRefreshKey((k) => k + 1);
+      setBackupMsg({
+        type: "ok",
+        text: `✓ İçe aktarıldı — toplam ${total} kayıt geri yüklendi${r.restoredCovers ? ` · ${r.restoredCovers} kapak görseli` : ""}`,
+      });
     } catch (err) {
       setBackupMsg({ type: "err", text: "✗ " + err.message });
     } finally {
@@ -94,7 +141,7 @@ export default function Admin() {
 
   async function doBackup() {
     if (!backupPath.trim()) {
-      setBackupMsg({ type: "err", text: "✗ Önce yedekleme yolunu seç (Gözat… veya elle yaz)" });
+      await doExport();
       return;
     }
     setBackupBusy(true);
@@ -211,9 +258,28 @@ export default function Admin() {
 
       <section className="backup-bar">
         <span className="backup-title">▸ YEDEKLEME</span>
+        <button
+          className="btn primary"
+          type="button"
+          onClick={doExport}
+          disabled={exportBusy || backupBusy || restoreBusy}
+          title="Tüm veritabanını tek dosyada (JSON) tarayıcıdan indir"
+        >
+          {exportBusy ? "indiriliyor…" : "⬇ Veritabanı İndir"}
+        </button>
+        <button
+          className="btn"
+          type="button"
+          onClick={() => restoreRef.current && restoreRef.current.click()}
+          disabled={restoreBusy || exportBusy || backupBusy}
+          title="İndirilen veritabanı JSON dosyasını (veya yedek data.json'u) içe aktar (mevcut veriyi değiştirir)"
+        >
+          {restoreBusy ? "içe aktarılıyor…" : "⬆ Veritabanı İçe Aktar"}
+        </button>
+        <input ref={restoreRef} type="file" accept="application/json,.json" hidden onChange={onRestoreFile} />
         <input
           className="backup-path"
-          placeholder="Yedekleme klasörü (ör. C:\Users\...\Masaüstü\yedek)"
+          placeholder="Yerel yedek klasörü (opsiyonel, ör. C:\Users\...\Masaüstü\yedek)"
           value={backupPath}
           onChange={(e) => setBackupPath(e.target.value)}
         />
@@ -228,13 +294,9 @@ export default function Admin() {
           />
           görselleri de indir
         </label>
-        <button className="btn primary" type="button" onClick={doBackup} disabled={backupBusy}>
-          {backupBusy ? "yedekleniyor…" : "Yedekle ▸"}
+        <button className="btn" type="button" onClick={doBackup} disabled={backupBusy || exportBusy}>
+          {backupBusy ? "yedekleniyor…" : "Klasöre Yedekle ▸"}
         </button>
-        <button className="btn" type="button" onClick={() => restoreRef.current && restoreRef.current.click()} disabled={restoreBusy} title="Yedek data.json'u içe aktar (mevcut veriyi değiştirir)">
-          {restoreBusy ? "içe aktarılıyor…" : "⬆ Veritabanı İçe Aktar"}
-        </button>
-        <input ref={restoreRef} type="file" accept="application/json,.json" hidden onChange={onRestoreFile} />
         {backupMsg && <div className={`msg ${backupMsg.type}`} style={{ flexBasis: "100%" }}>{backupMsg.text}</div>}
       </section>
 
@@ -259,11 +321,12 @@ export default function Admin() {
         </button>
       </div>
 
-      {tab === "plan" && <PlansAdmin />}
-      {tab === "kitap" && <KursKitaplariAdmin />}
+      {tab === "plan" && <PlansAdmin key={`plan-${refreshKey}`} />}
+      {tab === "kitap" && <KursKitaplariAdmin key={`kitap-${refreshKey}`} />}
 
       {tab === "arduino" && (
         <WritingAdmin
+          key={`arduino-${refreshKey}`}
           resource="arduino_projeleri"
           titleText="Arduino Projesi"
           extra={{ key: "image_url", label: "Devre resmi (URL)", type: "text", placeholder: "https://... (devre şeması görseli)", showBadge: false }}
@@ -272,6 +335,7 @@ export default function Admin() {
 
       {tab === "kose" && (
         <WritingAdmin
+          key={`kose-${refreshKey}`}
           resource="kose_yazilari"
           titleText="Köşe Yazısı"
           extra={{ key: "author", label: "Yazar", type: "text", placeholder: "Yazar adı" }}
@@ -281,11 +345,12 @@ export default function Admin() {
       {tab === "egitici" && (
         <>
           <WritingAdmin
+            key={`egitici-${refreshKey}`}
             resource="egitici_yazilar"
             titleText="Eğitici Yazı"
             extra={{ key: "level", label: "Seviye", type: "select", options: ["Başlangıç", "Orta", "İleri"] }}
           />
-          <TutorialPagesAdmin />
+          <TutorialPagesAdmin key={`egitici-pages-${refreshKey}`} />
         </>
       )}
 

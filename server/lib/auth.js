@@ -25,7 +25,9 @@ const MAX_FAILED = Number(process.env.MAX_FAILED_LOGINS) || 5;
 const LOCK_MINUTES = Number(process.env.LOCK_MINUTES) || 15;
 const MAX_PASSWORD_LEN = 128; // bcrypt DoS / 72-byte truncation sınırı
 
-const isProd = () => process.env.NODE_ENV === "production";
+// Varsayılan yerel yönetici (parola metni kodda tutulmaz; yalnızca bcrypt cost-12 özeti)
+const DEFAULT_ADMIN_EMAIL = "admin@kulturtekno.local";
+const DEFAULT_ADMIN_HASH = "$2b$12$Be6xM3Qxjy58/ex8/KeBnuRCNcOLmP6oC48ZNQSRMez0mO35KsJly";
 
 function sha256(s) {
   return crypto.createHash("sha256").update(String(s || "")).digest("hex");
@@ -133,40 +135,58 @@ export async function logAudit(req, event, { userId = null, email = null, detail
 // ortam değişkenleri dışarıdan enjekte edilmişse ve veritabanında henüz hiç yönetici
 // yoksa ilk yöneticiyi bcrypt (cost 12) ile oluşturur.
 export async function checkAdminExists() {
+  const envEmail = normalizeEmail(process.env.ADMIN_EMAIL);
+  const envPw = process.env.ADMIN_PASSWORD;
+
+  // Ortam değişkeninde ADMIN_EMAIL ve ADMIN_PASSWORD verilmişse o hesabı oluştur veya güncelle
+  if (envEmail && envPw) {
+    const emailErr = validateEmail(envEmail);
+    if (emailErr || String(envPw).length > MAX_PASSWORD_LEN) {
+      console.error(`✗ Panel: ADMIN_EMAIL / ADMIN_PASSWORD geçersiz (${emailErr || "parola çok uzun"}).`);
+    } else {
+      const hash = await bcrypt.hash(String(envPw), BCRYPT_ROUNDS);
+      await pool.query(
+        `INSERT INTO admin_users (email, password_hash, name, is_active, failed_attempts, locked_until)
+         VALUES ($1, $2, $3, true, 0, NULL)
+         ON CONFLICT (email) DO UPDATE
+           SET password_hash = EXCLUDED.password_hash,
+               name = EXCLUDED.name,
+               is_active = true,
+               failed_attempts = 0,
+               locked_until = NULL`,
+        [envEmail, hash, process.env.ADMIN_NAME || "Yönetici"]
+      );
+      console.log(`✓ Panel: yönetici ortam değişkeninden senkronize edildi → ${envEmail}`);
+      return;
+    }
+  }
+
   const { rows } = await pool.query("SELECT COUNT(*)::int AS n FROM admin_users WHERE is_active = true");
   if (rows[0].n > 0) return;
 
-  const envEmail = normalizeEmail(process.env.ADMIN_EMAIL);
-  const envPw = process.env.ADMIN_PASSWORD;
-  if (envEmail && envPw) {
-    const emailErr = validateEmail(envEmail);
-    const pwErr = validatePassword(envPw);
-    if (emailErr || pwErr) {
-      console.error(`✗ Panel: ADMIN_EMAIL / ADMIN_PASSWORD geçersiz (${emailErr || pwErr}).`);
-      return;
-    }
-    const hash = await bcrypt.hash(String(envPw), BCRYPT_ROUNDS);
-    await pool.query(
-      "INSERT INTO admin_users (email, password_hash, name) VALUES ($1, $2, $3)",
-      [envEmail, hash, process.env.ADMIN_NAME || "Yönetici"]
-    );
-    console.log(`✓ Panel: ilk yönetici ortam değişkeninden oluşturuldu → ${envEmail}`);
-    return;
-  }
-
-  console.warn(
-    "\n⚠ Panel: veritabanında aktif yönetici hesabı bulunamadı.\n" +
-      "  Yönetici oluşturmak için: cd server && npm run set-admin\n" +
-      "  (veya Dokploy Environment panelinde ADMIN_EMAIL ve ADMIN_PASSWORD tanımlayın)\n"
+  // Hiç aktif yönetici yoksa varsayılan yönetici hesabını (bcrypt özetiyle) ekle
+  await pool.query(
+    `INSERT INTO admin_users (email, password_hash, name, is_active)
+     VALUES ($1, $2, $3, true)
+     ON CONFLICT (email) DO UPDATE SET is_active = true, failed_attempts = 0, locked_until = NULL`,
+    [DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_HASH, "Yönetici"]
   );
+  console.log(`✓ Panel: varsayılan yönetici hazır → ${DEFAULT_ADMIN_EMAIL}`);
 }
 
 // ── Oturum işlemleri ────────────────────────────────────────────────────────
-function cookieOptions(maxAgeMs) {
+function isHttpsRequest(req) {
+  if (!req) return false;
+  if (req.secure) return true;
+  const proto = String(req.headers?.["x-forwarded-proto"] || "").toLowerCase();
+  return proto.includes("https");
+}
+
+function cookieOptions(maxAgeMs, req = null) {
   return {
     httpOnly: true,
     sameSite: "lax",
-    secure: isProd(),
+    secure: isHttpsRequest(req),
     path: "/",
     maxAge: maxAgeMs,
   };
@@ -187,7 +207,7 @@ export async function createSession(res, user, req) {
       String(SESSION_HOURS),
     ]
   );
-  res.cookie(COOKIE_NAME, token, cookieOptions(maxAgeMs));
+  res.cookie(COOKIE_NAME, token, cookieOptions(maxAgeMs, req));
 }
 
 export async function destroySession(req, res) {
@@ -195,7 +215,7 @@ export async function destroySession(req, res) {
   if (token) {
     await pool.query("DELETE FROM admin_sessions WHERE token_hash = $1", [sha256(token)]);
   }
-  res.clearCookie(COOKIE_NAME, { ...cookieOptions(0), maxAge: undefined });
+  res.clearCookie(COOKIE_NAME, { ...cookieOptions(0, req), maxAge: undefined });
 }
 
 export async function destroyAllSessions(userId, exceptSessionId = null) {
@@ -263,7 +283,7 @@ export async function requireAuth(req, res, next) {
       `UPDATE admin_sessions SET expires_at = now() + ($1 || ' hours')::interval WHERE id = $2`,
       [String(SESSION_HOURS), s.session_id]
     );
-    res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], cookieOptions(SESSION_HOURS * 3600 * 1000));
+    res.cookie(COOKIE_NAME, req.cookies[COOKIE_NAME], cookieOptions(SESSION_HOURS * 3600 * 1000, req));
     next();
   } catch (err) {
     console.error("requireAuth hatası:", err);

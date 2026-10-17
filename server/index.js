@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { checkAdminExists, ensureAuthSchema } from "./lib/auth.js";
+import { ensureContentSchema } from "./backup.js";
 import { apiGuard } from "./lib/guard.js";
 import authRoutes from "./routes/auth.js";
 import newsRoutes from "./routes/news.js";
@@ -60,9 +61,9 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json({ limit: "100mb" })); // base64 kapaklar + veritabanı içe aktarma için
+app.use(express.json({ limit: "250mb" })); // base64 kapaklar + büyük veritabanı içe aktarma için
 
-app.get("/api/health", (req, res) => res.json({ ok: true }));
+app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 // ▼▼▼ KAPI ▼▼▼
 // Kimlik doğrulama rotalarından HEMEN SONRA, içerik rotalarından ÖNCE.
@@ -95,9 +96,9 @@ if (process.env.SERVE_STATIC === "1" || process.env.NODE_ENV === "production") {
 
 const PORT = process.env.PORT || 4000;
 
-// Kimlik doğrulama şeması hazır olmadan istek kabul etmeyiz — aksi halde ilk
-// isteklerde oturum tablosu bulunamaz ve kapı 500 dönerek sağlıksız davranır.
+// Kimlik doğrulama ve içerik şeması hazır olmadan istek kabul etmeyiz.
 ensureAuthSchema()
+  .then(() => ensureContentSchema())
   .then(checkAdminExists)
   .then(() => {
     app.listen(PORT, () => {
